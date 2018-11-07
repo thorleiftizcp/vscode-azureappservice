@@ -8,7 +8,7 @@
 import * as opn from 'opn';
 import { extname } from 'path';
 import * as vscode from 'vscode';
-import { AppSettingsTreeItem, AppSettingTreeItem, editScmType, getFile, IFileResult, registerAppServiceExtensionVariables, SiteClient, stopStreamingLogs } from 'vscode-azureappservice';
+import { addAzureToRemote, AppSettingsTreeItem, AppSettingTreeItem, editScmType, getFile, IFileResult, registerAppServiceExtensionVariables, SiteClient, stopStreamingLogs } from 'vscode-azureappservice';
 import { AzureParentTreeItem, AzureTreeDataProvider, AzureTreeItem, AzureUserInput, createTelemetryReporter, IActionContext, IAzureUserInput, registerCommand, registerEvent, registerUIExtensionVariables, SubscriptionTreeItem } from 'vscode-azureextensionui';
 import { SiteConfigResource } from '../node_modules/azure-arm-website/lib/models';
 import { addCosmosDBConnection } from './commands/connections/addCosmosDBConnection';
@@ -318,6 +318,7 @@ export function activate(context: vscode.ExtensionContext): void {
     registerCommand('appService.AddCosmosDBConnection', addCosmosDBConnection);
     registerCommand('appService.RemoveCosmosDBConnection', removeCosmosDBConnection);
     registerCommand('appService.RevealConnection', async (node: CosmosDBConnection) => await ext.cosmosAPI.revealTreeItem(node.cosmosDBDatabase.treeItemId));
+    registerCommand('appService.AddAzureRemote', async (node: WebAppTreeItem) => await addAzureToRemote(node.root.client, vscode.workspace.workspaceFolders[0].uri.fsPath));
 }
 
 // tslint:disable-next-line:no-empty

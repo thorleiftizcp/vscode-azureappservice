@@ -237,6 +237,11 @@
                 "command": "appService.RemoveCosmosDBConnection",
                 "title": "Remove Connection",
                 "category": "Azure App Service"
+            },
+            {
+                "command": "appService.AddAzureRemote",
+                "title": "Add Azure Remote",
+                "category": "Azure App Service"
             }
         ],
         "viewsContainers": {
@@ -631,6 +636,11 @@
                     "command": "appService.RemoveCosmosDBConnection",
                     "when": "view == azureAppService && viewItem == cosmosDBConnection",
                     "group": "2@1"
+                },
+                {
+                    "command": "appService.AddAzureRemote",
+                    "when": "view == azureAppService && viewItem == appService",
+                    "group": "5_appServiceDiagnosticsCommands@1"
                 }
             ],
             "explorer/context": [

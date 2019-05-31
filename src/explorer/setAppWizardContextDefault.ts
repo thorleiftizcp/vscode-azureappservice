@@ -7,9 +7,13 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import { Uri, workspace, WorkspaceConfiguration } from 'vscode';
 import { IAppServiceWizardContext, LinuxRuntimes, WebsiteOS } from 'vscode-azureappservice';
-import { LocationListStep } from 'vscode-azureextensionui';
+import { IActionContext, LocationListStep } from 'vscode-azureextensionui';
 import { configurationSettings, extensionPrefix } from '../constants';
 import { javaUtils } from '../utils/javaUtils';
+
+export interface IDeployWizardContext extends IActionContext {
+    createdFromDeploy?: boolean;
+}
 
 export async function setAppWizardContextDefault(wizardContext: IAppServiceWizardContext): Promise<void> {
     const isJavaProject: boolean = await javaUtils.isJavaProject();

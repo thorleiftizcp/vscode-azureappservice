@@ -12,6 +12,7 @@ import { commands, Disposable, MessageItem, Uri, window, workspace, WorkspaceCon
 import * as appservice from 'vscode-azureappservice';
 import { AzureTreeItem, DialogResponses, IActionContext, parseError } from 'vscode-azureextensionui';
 import * as constants from '../constants';
+import { IDeployWizardContext } from '../explorer/setAppWizardContextDefault';
 import { SiteTreeItem } from '../explorer/SiteTreeItem';
 import { WebAppTreeItem } from '../explorer/WebAppTreeItem';
 import { ext } from '../extensionVariables';
@@ -25,7 +26,7 @@ import { cancelWebsiteValidation, validateWebSite } from '../validateWebSite';
 import { startStreamingLogs } from './startStreamingLogs';
 
 // tslint:disable-next-line:max-func-body-length cyclomatic-complexity
-export async function deploy(context: IActionContext, confirmDeployment: boolean, target?: Uri | SiteTreeItem | undefined): Promise<void> {
+export async function deploy(context: IDeployWizardContext, confirmDeployment: boolean, target?: Uri | SiteTreeItem | undefined): Promise<void> {
 
     let node: SiteTreeItem | undefined;
     const newNodes: SiteTreeItem[] = [];
@@ -87,7 +88,7 @@ export async function deploy(context: IActionContext, confirmDeployment: boolean
         for (const newApp of newNodes) {
             if (newApp.fullId === node.fullId) {
                 // if the node selected for deployment is the same newly created nodes, stifle the confirmDeployment dialog
-                confirmDeployment = false;
+                context.createdFromDeploy = true;
                 newApp.root.client.getSiteConfig().then(
                     (createdAppConfig: SiteConfigResource) => {
                         context.telemetry.properties.linuxFxVersion = createdAppConfig.linuxFxVersion ? createdAppConfig.linuxFxVersion : 'undefined';
@@ -133,7 +134,7 @@ export async function deploy(context: IActionContext, confirmDeployment: boolean
         }
     }
 
-    if (confirmDeployment && siteConfig.scmType !== constants.ScmType.LocalGit && siteConfig !== constants.ScmType.GitHub) {
+    if (!context.createdFromDeploy && siteConfig.scmType !== constants.ScmType.LocalGit && siteConfig !== constants.ScmType.GitHub) {
         const warning: string = `Are you sure you want to deploy to "${node.root.client.fullName}"? This will overwrite any previous deployment and cannot be undone.`;
         context.telemetry.properties.cancelStep = 'confirmDestructiveDeployment';
         const items: MessageItem[] = [{ title: 'Deploy' }];

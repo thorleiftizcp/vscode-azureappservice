@@ -7,7 +7,7 @@
 
 import * as vscode from 'vscode';
 import { AppSettingsTreeItem, AppSettingTreeItem, DeploymentsTreeItem, ISiteTreeRoot, registerAppServiceExtensionVariables, SiteClient, stopStreamingLogs } from 'vscode-azureappservice';
-import { AzExtTreeDataProvider, AzureTreeItem, AzureUserInput, callWithTelemetryAndErrorHandling, createApiProvider, createTelemetryReporter, IActionContext, IAzureUserInput, openInPortal, registerCommand, registerEvent, registerUIExtensionVariables } from 'vscode-azureextensionui';
+import { AzExtTreeDataProvider, AzureOutputChannel, AzureTreeItem, AzureUserInput, callWithTelemetryAndErrorHandling, createApiProvider, createTelemetryReporter, IActionContext, IAzureUserInput, openInPortal, registerCommand, registerEvent, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { downloadAppSettings } from './commands/appSettings/downloadAppSettings';
 import { toggleSlotSetting } from './commands/appSettings/toggleSlotSetting';
@@ -63,7 +63,7 @@ export async function activateInternal(
     const ui: IAzureUserInput = new AzureUserInput(context.globalState);
     ext.ui = ui;
 
-    ext.outputChannel = vscode.window.createOutputChannel("Azure App Service");
+    ext.outputChannel = new AzureOutputChannel("Azure App Service", vscode.window.createOutputChannel("Azure App Service"));
     context.subscriptions.push(ext.outputChannel);
 
     registerUIExtensionVariables(ext);

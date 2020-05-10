@@ -5,7 +5,9 @@
 
 import { FileTreeItem, getFile, IFileResult, putFile } from 'vscode-azureappservice';
 import { BaseEditor, IParsedError, parseError } from 'vscode-azureextensionui';
+import KuduClient from 'vscode-azurekudu';
 import { ext } from '../../extensionVariables';
+import { localize } from '../../localize';
 import { nonNullValue } from '../../utils/nonNull';
 
 export class FileEditor extends BaseEditor<FileTreeItem> {
@@ -27,10 +29,25 @@ export class FileEditor extends BaseEditor<FileTreeItem> {
         return node.root.client.fullName;
     }
 
-    public async getData(node: FileTreeItem): Promise<string> {
-        const result: IFileResult = await getFile(node.root.client, node.path);
-        this._etags.set(node.fullId, result.etag);
-        return result.data;
+    public async getData(node: FileTreeItem | TrialAppFileTreeItem): Promise<string> {
+        if (node instanceof FileTreeItem) {
+            const result: IFileResult = await getFile(node.root.client, node.path);
+            this._etags.set(node.fullId, result.etag);
+            return result.data;
+        } else {
+            const kuduClient: KuduClient = node.kuduClient;
+            // tslint:disable:no-unsafe-any
+            // tslint:disable-next-line:no-any
+            const response: any = (<any>await kuduClient.vfs.getItemWithHttpOperationResponse(node.path)).response;
+            if (response && response.headers && response.headers.etag) {
+                const result: IFileResult = { data: response.body, etag: response.headers.etag };
+                this._etags.set(node.fullId, result.etag);
+                return result.data;
+                // tslint:enable:no-unsafe-any
+            } else {
+                throw new Error(localize('failedToFindFile', 'Failed to find file with path "{0}".', node.path));
+            }
+        }
     }
 
     public async getSize(_node: FileTreeItem): Promise<number> {

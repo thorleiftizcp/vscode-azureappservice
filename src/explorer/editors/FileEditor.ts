@@ -17,7 +17,7 @@ export class FileEditor extends BaseEditor<FileTreeItem> {
         super(`${ext.prefix}.showSavePrompt`);
     }
 
-    public async getSaveConfirmationText(node: FileTreeItem): Promise<string> {
+    public async getSaveConfirmationText(node: FileTreeItem | TrialAppFileTreeItem): Promise<string> {
         return `Saving '${node.label}' will update the file "${node.label}" in "${node.root.client.fullName}".`;
     }
 

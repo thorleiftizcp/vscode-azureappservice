@@ -81,7 +81,7 @@ export class TrialAppSettingsTreeItem extends AzExtParentTreeItem {
         const settings: StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
         const newKey: string = await ext.ui.showInputBox({
             prompt: 'Enter new setting key',
-            validateInput: (v?: string): string | undefined => validateAppSettingKey(settings, this.client, v)
+            validateInput: (v: string): string | undefined => validateAppSettingKey(settings, this.client, v)
         });
 
         const newValue: string = await ext.ui.showInputBox({

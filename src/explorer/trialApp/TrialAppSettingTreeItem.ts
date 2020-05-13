@@ -52,7 +52,7 @@ export class TrialAppSettingTreeItem extends AzExtTreeItem {
         const newKey: string = await ext.ui.showInputBox({
             prompt: `Enter a new name for "${oldKey}"`,
             value: this._key,
-            validateInput: (v?: string): string | undefined => validateAppSettingKey(settings, this.parent.client, v, oldKey)
+            validateInput: (v: string): string | undefined => validateAppSettingKey(settings, this.parent.client, v, oldKey)
         });
 
         await this.parent.editSettingItem(oldKey, newKey, this._value, context);

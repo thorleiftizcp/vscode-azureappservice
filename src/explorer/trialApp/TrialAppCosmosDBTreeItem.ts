@@ -207,7 +207,7 @@ export class TrialAppCosmosDBTreeItem extends AzExtParentTreeItem {
 
         const appSettingKey: string = await ext.ui.showInputBox({
             prompt,
-            validateInput: (v?: string): string | undefined => validateAppSettingKey(appSettingsDict, this.parent.parent.client, v),
+            validateInput: (v: string): string | undefined => validateAppSettingKey(appSettingsDict, this.parent.parent.client, v),
             value: defaultKey
         });
 

@@ -9,6 +9,7 @@ import KuduClient from 'vscode-azurekudu';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../localize';
 import { nonNullValue } from '../../utils/nonNull';
+import { TrialAppFileTreeItem } from '../trialApp/TrialAppFileTreeItem';
 
 export class FileEditor extends BaseEditor<FileTreeItem> {
     private _etags: Map<string, string> = new Map<string, string>();

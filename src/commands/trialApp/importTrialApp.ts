@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { window } from "vscode";
-import { ext } from '../extensionVariables';
+import { window } from 'vscode';
+import { ext } from '../../extensionVariables';
 
 export async function importTrialApp(loginSession?: string): Promise<void> {
 

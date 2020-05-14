@@ -6,7 +6,7 @@
 import * as querystring from 'querystring';
 import { commands, Disposable, Uri, UriHandler, window } from 'vscode';
 
-export class ImportHandler implements UriHandler {
+export class ExternalUriHandler implements UriHandler {
 
     private disposables: Disposable[] = [];
 

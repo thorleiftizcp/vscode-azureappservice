@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from "vscode-azureextensionui";
-import { TrialAppTreeItem } from "../../explorer/TrialAppTreeItem";
-import { ext } from "../../extensionVariables";
+import { IActionContext } from 'vscode-azureextensionui';
+import { TrialAppTreeItem } from '../../explorer/TrialAppTreeItem';
+import { ext } from '../../extensionVariables';
 
 export async function removeTrialApp(context: IActionContext, node?: TrialAppTreeItem): Promise<void> {
     if (!node) {

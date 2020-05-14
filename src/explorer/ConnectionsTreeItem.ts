@@ -9,7 +9,6 @@ import { getThemedIconPath, IThemedIconPath } from '../utils/pathUtils';
 import { CosmosDBConnection } from './CosmosDBConnection';
 import { CosmosDBTreeItem } from './CosmosDBTreeItem';
 import { SiteTreeItem } from './SiteTreeItem';
-import { TrialAppTreeItem } from './TrialAppTreeItem';
 
 export class ConnectionsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     public static contextValue: string = 'connections';
@@ -19,7 +18,7 @@ export class ConnectionsTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
 
     private readonly _cosmosDBNode: CosmosDBTreeItem;
 
-    constructor(parent: SiteTreeItem | TrialAppTreeItem) {
+    constructor(parent: SiteTreeItem) {
         super(parent);
         this._cosmosDBNode = new CosmosDBTreeItem(this);
     }

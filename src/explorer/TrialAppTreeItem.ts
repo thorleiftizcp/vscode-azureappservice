@@ -4,19 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vscode';
-import { ITrialAppMetadata, TrialAppClient } from 'vscode-azureappservice';
+import { AttachedAccountRoot } from 'vscode-azureappservice';
 import { ext } from 'vscode-azureappservice/out/src/extensionVariables';
 import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
-import { AzExtParentTreeItem, AzExtTreeItem } from '../../extension.bundle';
-import { TrialAppConnectionsTreeItem } from './trialApp/TrialAppConnectionsTreeItem';
-import { TrialAppConvertTreeItem } from './trialApp/TrialAppConvertTreeItem';
-import { TrialAppDeploymentTreeItem } from './trialApp/TrialAppDeploymentTreeItem';
-import { TrialAppFolderTreeItem } from './trialApp/TrialAppFolderTreeItem';
-import { TrialAppLogFilesTreeItem } from './trialApp/TrialAppLogFilesTreeItem';
-import { TrialAppSettingsTreeItem } from './trialApp/TrialAppSettingsTreeItem';
-import { TrialAppTreeItemBase } from './TrialAppTreeItemBase';
+import { AzExtParentTreeItem } from '../../extension.bundle';
+import { ITrialAppMetadata } from '../ITrialAppMetadata';
+import { TrialAppClient } from '../TrialAppClient';
+import { getIconPath } from '../utils/pathUtils';
+import { AzureAccountTreeItem } from './AzureAccountTreeItem';
+import { SiteTreeItem } from './SiteTreeItem';
 
-export class TrialAppTreeItem extends TrialAppTreeItemBase {
+export class TrialAppTreeItem extends SiteTreeItem {
+
     public get label(): string {
         return this.metadata.siteName ? this.metadata.siteName : 'NodeJS Trial App';
     }
@@ -26,31 +25,33 @@ export class TrialAppTreeItem extends TrialAppTreeItemBase {
         return (isNaN(minutesLeft)) ? 'Expired' : `${minutesLeft.toFixed(0)} min. remaining`;
     }
 
-    public static contextValue: string = 'trialApp';
+    public static get contextValue(): string {
+        return 'trialApp';
+    }
+
+    public contextValue: string = 'trialApp';
+    public timeLeft: number = 60;
+    public parent: AzExtParentTreeItem;
+    public childTypeLabel: string = 'trialApp';
+    public id: string;
+
+    public readonly iconPath: string = getIconPath('WebApp');
+
     public isReadOnly: boolean;
+
     public metadata: ITrialAppMetadata;
 
     public client: TrialAppClient;
 
-    public root: TrialAppTreeItem = this;
-
-    private readonly _appSettingsNode: TrialAppSettingsTreeItem;
-    private readonly _deploymentsNode: TrialAppDeploymentTreeItem;
-    private readonly _connectionsNode: TrialAppConnectionsTreeItem;
-    private readonly _siteFilesNode: TrialAppFolderTreeItem;
-    private readonly _logFilesNode: TrialAppLogFilesTreeItem;
+    // private readonly _appSettingsNode: AppSettingsTreeItem;
+    // private readonly _deploymentsNode: TrialAppDeploymentTreeItem;
     private readonly _disposables: Disposable[] = [];
 
-    constructor(parent: AzExtParentTreeItem, metadata: ITrialAppMetadata) {
-        super(parent);
-
-        this.metadata = metadata;
-        this.client = new TrialAppClient(this.metadata.publishingUserName, this.metadata.publishingPassword, this.metadata);
-        this._deploymentsNode = new TrialAppDeploymentTreeItem(this, this.client);
-        this._logFilesNode = new TrialAppLogFilesTreeItem(this, this.client);
-        this._appSettingsNode = new TrialAppSettingsTreeItem(this, this.client);
-        this._siteFilesNode = new TrialAppFolderTreeItem(this, 'Files', '/site/wwwroot', false, this.client);
-        this._connectionsNode = new TrialAppConnectionsTreeItem(this);
+    constructor(parent: AzureAccountTreeItem, client: TrialAppClient) {
+        super(new AttachedAccountRoot(), client);
+        this.client = client;
+        this.metadata = client.metadata;
+        this.parent = parent;
     }
 
     public dispose(): void {
@@ -69,11 +70,6 @@ export class TrialAppTreeItem extends TrialAppTreeItemBase {
     public isAncestorOfImpl?(_contextValue: string | RegExp): boolean {
         return false;
     }
-
-    public async loadMoreChildrenImpl(_clearCache: boolean): Promise<AzExtTreeItem[]> {
-        return [this._appSettingsNode, this._connectionsNode, this._deploymentsNode, this._siteFilesNode, this._logFilesNode, new TrialAppConvertTreeItem(this)];
-    }
-
     public async deleteTreeItemImpl(): Promise<void> {
         ext.outputChannel.appendLine(`Deleting; ${this.label} Trial app...`);
 

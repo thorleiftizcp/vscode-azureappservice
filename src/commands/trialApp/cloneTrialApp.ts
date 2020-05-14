@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { commands } from 'vscode';
-import { IActionContext } from "vscode-azureextensionui";
-import { TrialAppTreeItem } from "../../explorer/TrialAppTreeItem";
-import { ext } from "../../extensionVariables";
+import { IActionContext } from 'vscode-azureextensionui';
+import { TrialAppTreeItem } from '../../explorer/TrialAppTreeItem';
+import { ext } from '../../extensionVariables';
 
 export async function cloneTrialApp(context: IActionContext, node?: TrialAppTreeItem): Promise<void> {
     if (!node) {

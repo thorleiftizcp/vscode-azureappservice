@@ -5,11 +5,8 @@
 
 import { FileTreeItem, getFile, IFileResult, putFile } from 'vscode-azureappservice';
 import { BaseEditor, IParsedError, parseError } from 'vscode-azureextensionui';
-import KuduClient from 'vscode-azurekudu';
 import { ext } from '../../extensionVariables';
-import { localize } from '../../localize';
 import { nonNullValue } from '../../utils/nonNull';
-import { TrialAppFileTreeItem } from '../trialApp/TrialAppFileTreeItem';
 
 export class FileEditor extends BaseEditor<FileTreeItem> {
     private _etags: Map<string, string> = new Map<string, string>();
@@ -18,7 +15,7 @@ export class FileEditor extends BaseEditor<FileTreeItem> {
         super(`${ext.prefix}.showSavePrompt`);
     }
 
-    public async getSaveConfirmationText(node: FileTreeItem | TrialAppFileTreeItem): Promise<string> {
+    public async getSaveConfirmationText(node: FileTreeItem): Promise<string> {
         return `Saving '${node.label}' will update the file "${node.label}" in "${node.root.client.fullName}".`;
     }
 
@@ -30,25 +27,10 @@ export class FileEditor extends BaseEditor<FileTreeItem> {
         return node.root.client.fullName;
     }
 
-    public async getData(node: FileTreeItem | TrialAppFileTreeItem): Promise<string> {
-        if (node instanceof FileTreeItem) {
-            const result: IFileResult = await getFile(node.root.client, node.path);
-            this._etags.set(node.fullId, result.etag);
-            return result.data;
-        } else {
-            const kuduClient: KuduClient = await node.client.getKuduClient();
-            // tslint:disable:no-unsafe-any
-            // tslint:disable-next-line:no-any
-            const response: any = (<any>await kuduClient.vfs.getItemWithHttpOperationResponse(node.path)).response;
-            if (response && response.headers && response.headers.etag) {
-                const result: IFileResult = { data: response.body, etag: response.headers.etag };
-                this._etags.set(node.fullId, result.etag);
-                return result.data;
-                // tslint:enable:no-unsafe-any
-            } else {
-                throw new Error(localize('failedToFindFile', 'Failed to find file with path "{0}".', node.path));
-            }
-        }
+    public async getData(node: FileTreeItem): Promise<string> {
+        const result: IFileResult = await getFile(node.root.client, node.path);
+        this._etags.set(node.fullId, result.etag);
+        return result.data;
     }
 
     public async getSize(_node: FileTreeItem): Promise<number> {

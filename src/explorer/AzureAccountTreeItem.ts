@@ -4,12 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ProgressLocation, window } from 'vscode';
-import { ITrialAppMetadata } from 'vscode-azureappservice';
 import { AzExtTreeItem, AzureAccountTreeItemBase, GenericTreeItem, IActionContext, ISubscriptionContext } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
+import { TrialAppClient } from '../TrialAppClient';
 import { getIconPath } from '../utils/pathUtils';
-import { requestUtils } from '../utils/requestUtils';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
 import { TrialAppTreeItem } from './TrialAppTreeItem';
 
@@ -23,28 +22,27 @@ export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
     }
 
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-
         const children: AzExtTreeItem[] = await super.loadMoreChildrenImpl(clearCache, context);
 
         const hasTrialApp: boolean | undefined = ext.context.globalState.get('trialApp.hasApp');
         const importedTrialApp: boolean | undefined = ext.context.globalState.get('trialApp.imported');
+        const loginSession: string | undefined = ext.context.globalState.get('trialApp.loginsession');
 
         let addCreateTrialAppNode: boolean = !importedTrialApp && !hasTrialApp && children.length > 0 && children[0] instanceof GenericTreeItem;
 
         if (importedTrialApp && !hasTrialApp) {
             await window.withProgress({ location: ProgressLocation.Notification, cancellable: false }, async p => {
 
-                const session: string | undefined = ext.context.globalState.get('trialApp.loginsession');
-                if (session) {
-                    p.report({ message: 'Importing trial app...' });
+                if (loginSession) {
+                    p.report({ message: localize('importingTrialApp', 'Importing trial app...') });
                     try {
-                        const metadata: ITrialAppMetadata = await this.getTrialAppMetaData(session);
-                        const trialAppNode = new TrialAppTreeItem(this, metadata);
+                        const client: TrialAppClient = await TrialAppClient.createTrialAppClient(loginSession);
+                        const trialAppNode: TrialAppTreeItem = new TrialAppTreeItem(this, client);
 
                         children.push(trialAppNode);
                         ext.context.globalState.update('trialApp.hasApp', true);
                     } catch (error) {
-                        window.showErrorMessage('App could not be imported. Trial app has expired.');
+                        window.showErrorMessage(localize('trialAppCouldNotBeImportedExpired', 'App could not be imported. Trial app has expired.'));
                         addCreateTrialAppNode = true;
                         ext.context.globalState.update('trialApp.hasApp', false);
                     }
@@ -54,11 +52,8 @@ export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
             ext.context.globalState.update('trialApp.imported', false);
         } else {
             if (ext.context.globalState.get('trialApp.hasApp') === true) {
-                const session: string | undefined = ext.context.globalState.get('trialApp.loginsession');
-                if (session) {
-                    const metadata: ITrialAppMetadata = await this.getTrialAppMetaData(session);
-                    const trialAppNode = new TrialAppTreeItem(this, metadata);
-
+                if (loginSession) {
+                    const trialAppNode = new TrialAppTreeItem(this, await TrialAppClient.createTrialAppClient(loginSession));
                     children.push(trialAppNode);
                 }
             }
@@ -89,29 +84,5 @@ export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
             return -1; // trial apps on top of subscriptions
         }
         return super.compareChildrenImpl(item1, item2);
-    }
-
-    private async getTrialAppMetaData(loginsession: string): Promise<ITrialAppMetadata> {
-        const metadataRequest: requestUtils.Request = await requestUtils.getDefaultRequest('https://tryappservice.azure.com/api/vscoderesource', undefined, 'GET');
-
-        metadataRequest.headers = {
-            accept: "*/*",
-            "accept-language": "en-US,en;q=0.9",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            cookie: `loginsession=${loginsession}`
-        };
-
-        try {
-            const result: string = await requestUtils.sendRequest<string>(metadataRequest);
-            return <ITrialAppMetadata>JSON.parse(result);
-
-        } catch (e) {
-            ext.outputChannel.appendLine(`Error: Unable to fetch trial app metadata.\n ${e}`);
-            ext.context.globalState.update('trialApp.hasApp', false);
-            ext.context.globalState.update('trialApp.imported', false);
-            throw Error;
-        }
     }
 }

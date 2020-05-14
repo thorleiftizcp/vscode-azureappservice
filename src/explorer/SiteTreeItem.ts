@@ -7,7 +7,7 @@ import * as WebSiteModels from 'azure-arm-website/lib/models';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import { MessageItem } from 'vscode';
-import { AppSettingsTreeItem, AppSettingTreeItem, deleteSite, DeploymentsTreeItem, DeploymentTreeItem, FolderTreeItem, ISiteTreeRoot, LinuxRuntimes, LogFilesTreeItem, SiteClient, SiteFilesTreeItem } from 'vscode-azureappservice';
+import { AppSettingsTreeItem, AppSettingTreeItem, deleteSite, DeploymentsTreeItem, DeploymentTreeItem, FolderTreeItem, ISiteClient, ISiteTreeRoot, LinuxRuntimes, LogFilesTreeItem, SiteFilesTreeItem } from 'vscode-azureappservice';
 import { AzExtTreeItem, AzureParentTreeItem, AzureTreeItem, DialogResponses, IActionContext } from 'vscode-azureextensionui';
 import * as constants from '../constants';
 import { ext } from '../extensionVariables';
@@ -34,7 +34,7 @@ export abstract class SiteTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     private readonly _root: ISiteTreeRoot;
     private _state?: string;
 
-    constructor(parent: AzureParentTreeItem, client: SiteClient) {
+    constructor(parent: AzureParentTreeItem, client: ISiteClient) {
         super(parent);
         this._root = Object.assign({}, parent.root, { client });
         this._state = client.initialState;

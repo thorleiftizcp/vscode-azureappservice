@@ -3,15 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementModels } from "azure-arm-website";
+import { WebSiteManagementModels } from 'azure-arm-website';
 import * as dotenv from 'dotenv';
-import { Uri, window } from "vscode";
-import { AppSettingsTreeItem, confirmOverwriteSettings, SiteClient } from "vscode-azureappservice";
-import { IActionContext } from "vscode-azureextensionui";
-import { envFileName } from "../../constants";
-import { ext } from "../../extensionVariables";
+import { Uri, window } from 'vscode';
+import { AppSettingsTreeItem, confirmOverwriteSettings, ISiteClient } from 'vscode-azureappservice';
+import { IActionContext } from 'vscode-azureextensionui';
+
+import { envFileName } from '../../constants';
+import { ext } from '../../extensionVariables';
 import * as workspaceUtil from '../../utils/workspace';
-import { getLocalEnvironmentVariables } from "./getLocalEnvironmentVariables";
+import { getLocalEnvironmentVariables } from './getLocalEnvironmentVariables';
 
 export async function uploadAppSettings(context: IActionContext, target?: Uri | AppSettingsTreeItem | undefined): Promise<void> {
     let node: AppSettingsTreeItem | undefined;
@@ -27,7 +28,7 @@ export async function uploadAppSettings(context: IActionContext, target?: Uri | 
     if (!node) {
         node = <AppSettingsTreeItem>await ext.tree.showTreeItemPicker(AppSettingsTreeItem.contextValue, context);
     }
-    const client: SiteClient = node.root.client;
+    const client: ISiteClient = node.root.client;
     await node.runWithTemporaryDescription(`Uploading settings to "${client.fullName}"...`, async () => {
         const localEnvVariables: dotenv.DotenvParseOutput = await getLocalEnvironmentVariables(envPath);
         if (Object.keys(localEnvVariables).length > 0) {

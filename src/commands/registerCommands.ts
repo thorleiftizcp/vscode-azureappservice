@@ -50,7 +50,7 @@ import { removeTrialApp } from './trialApp/removeTrialApp';
 
 export function registerCommands(): void {
 
-    commands.registerCommand('appService.ImportTrialApp', importTrialApp);
+    registerCommand('appService.ImportTrialApp', importTrialApp);
     registerCommand('appService.CloneTrialApp', cloneTrialApp);
     registerCommand('appService.RemoveTrialApp', removeTrialApp);
     registerCommand('appService.AddCosmosDBConnection', addCosmosDBConnection);

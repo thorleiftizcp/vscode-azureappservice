@@ -4,7 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as querystring from 'querystring';
-import { commands, Disposable, Uri, UriHandler, window } from 'vscode';
+import { Disposable, Uri, UriHandler, window } from 'vscode';
+import { callWithTelemetryAndErrorHandling, IActionContext } from 'vscode-azureextensionui';
+import { importTrialApp } from './commands/trialApp/importTrialApp';
 
 export class ExternalUriHandler implements UriHandler {
 
@@ -14,9 +16,9 @@ export class ExternalUriHandler implements UriHandler {
         this.disposables.push(window.registerUriHandler(this));
     }
 
-    public handleUri(uri: Uri): void {
+    public async handleUri(uri: Uri): Promise<void> {
         switch (uri.path) {
-            case '/ImportTrialApp': this.importTrialApp(uri);
+            case '/ImportTrialApp': await this.importTrialApp(uri);
             default:
         }
     }
@@ -25,14 +27,20 @@ export class ExternalUriHandler implements UriHandler {
         this.disposables = dispose(this.disposables);
     }
 
-    private importTrialApp(uri: Uri): void {
+    private async importTrialApp(uri: Uri): Promise<void> {
         const data = querystring.parse(uri.query);
 
         if (!data.url) {
             console.warn('Failed to import URI:', uri);
         }
 
-        commands.executeCommand('appService.ImportTrialApp', data.loginSession);
+        if (typeof data.loginSession === 'string') {
+            await callWithTelemetryAndErrorHandling<void>('importTrialApp', async (context: IActionContext): Promise<void> => {
+                if (typeof data.loginSession === 'string') {
+                    await importTrialApp(context, data.loginSession);
+                }
+            });
+        }
     }
 }
 

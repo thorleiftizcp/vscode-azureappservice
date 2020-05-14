@@ -4,15 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { window } from 'vscode';
+import { AzExtTreeItem, IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
+import { localize } from '../../localize';
 
-export async function importTrialApp(loginSession?: string): Promise<void> {
+export async function importTrialApp(context: IActionContext, loginSession?: string): Promise<void> {
 
     if (loginSession) {
         ext.context.globalState.update('trialApp.loginsession', loginSession);
         ext.context.globalState.update('trialApp.imported', true);
+
         await ext.azureAccountTreeItem.refresh();
+        const children: AzExtTreeItem[] = await ext.azureAccountTreeItem.getCachedChildren(context);
+        await ext.treeView.reveal(children[-1], { expand: 2, focus: true, select: true });
     } else {
-        window.showErrorMessage('App could not be imported. No loginSession provided.');
+        window.showErrorMessage(localize('importFailedNoLoginSession', 'Failed to import trial app. No loginSession provided.'));
     }
 }

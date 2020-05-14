@@ -31,7 +31,6 @@
     "activationEvents": [
         "onCommand:appService.RemoveTrialApp",
         "onCommand:appService.ImportTrialApp",
-        "onCommand:appService.CreateTrialApp",
         "onCommand:appService.CreateWebApp",
         "onCommand:appService.CreateWebAppAdvanced",
         "onCommand:appService.Refresh",
@@ -42,8 +41,6 @@
         "onCommand:appService.Stop",
         "onCommand:appService.Restart",
         "onCommand:appService.Delete",
-        "onCommand:appService.DeleteTrialApp",
-        "onCommand:appService.ExtendTrialApp",
         "onCommand:appService.Deploy",
         "onCommand:appService.ConfigureDeploymentSource",
         "onCommand:appService.DeploymentScript",
@@ -77,15 +74,6 @@
     "main": "./main.js",
     "contributes": {
         "commands": [
-            {
-                "command": "appService.CreateTrialApp",
-                "title": "Create New Trial App...",
-                "category": "Azure App Service",
-                "icon": {
-                    "light": "resources/light/createAppSvc.svg",
-                    "dark": "resources/dark/createAppSvc.svg"
-                }
-            },
             {
                 "command": "appService.selectSubscriptions",
                 "title": "Select Subscriptions...",
@@ -159,16 +147,6 @@
             {
                 "command": "appService.Delete",
                 "title": "Delete...",
-                "category": "Azure App Service"
-            },
-            {
-                "command": "appService.DeleteTrialApp",
-                "title": "Delete Trial App...",
-                "category": "Azure App Service"
-            },
-            {
-                "command": "appService.ExtendTrialApp",
-                "title": "Extend Trial to 24 hours",
                 "category": "Azure App Service"
             },
             {
@@ -420,16 +398,6 @@
                     "command": "appService.CloneTrialApp",
                     "when": "view == azureAppService && viewItem =~ /^(trialApp)$/",
                     "group": "1_appServiceGeneralCommands@3"
-                },
-                {
-                    "command": "appService.ExtendTrialApp",
-                    "when": "view == azureAppService && viewItem =~ /^(trialApp)$/",
-                    "group": "1_trialAppModificationCommands@1"
-                },
-                {
-                    "command": "appService.DeleteTrialApp",
-                    "when": "view == azureAppService && viewItem == trialApp",
-                    "group": "1_trialAppModificationCommands@2"
                 },
                 {
                     "command": "appService.selectSubscriptions",

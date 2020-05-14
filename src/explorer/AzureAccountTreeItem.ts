@@ -9,7 +9,6 @@ import { TrialApp } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
 import { TrialAppClient } from '../TrialAppClient';
-import { getIconPath } from '../utils/pathUtils';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
 import { TrialAppTreeItem } from './TrialAppTreeItem';
 
@@ -29,9 +28,7 @@ export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
         const importedTrialApp: boolean | undefined = ext.context.globalState.get(TrialApp.imported);
         const loginSession: string | undefined = ext.context.globalState.get(TrialApp.loginSession);
 
-        let addCreateTrialAppNode: boolean = !importedTrialApp && !hasTrialApp && children.length > 0 && children[0] instanceof GenericTreeItem;
-
-        if (importedTrialApp && !hasTrialApp) {
+        if (importedTrialApp && !hasTrialApp) { // importing trial app
             await window.withProgress({ location: ProgressLocation.Notification, cancellable: false }, async p => {
 
                 if (loginSession) {
@@ -51,33 +48,19 @@ export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
                         ext.context.globalState.update(TrialApp.hasApp, true);
                     } catch (error) {
                         window.showErrorMessage(localize('trialAppCouldNotBeImportedExpired', 'App could not be imported. Trial app has expired.'));
-                        addCreateTrialAppNode = true;
                         ext.context.globalState.update(TrialApp.hasApp, false);
                     }
                 }
 
             });
             ext.context.globalState.update(TrialApp.imported, false);
-        } else {
+        } else { // trial app already imported
             if (ext.context.globalState.get(TrialApp.hasApp) === true) {
                 if (loginSession) {
                     const trialAppNode = new TrialAppTreeItem(this, await TrialAppClient.createTrialAppClient(loginSession));
                     children.push(trialAppNode);
                 }
             }
-        }
-
-        if (addCreateTrialAppNode) {
-            const ti: GenericTreeItem = new GenericTreeItem(this, {
-                label: localize('createNewTrialApp', 'Create free NodeJS Trial App...'),
-                commandId: 'appService.CreateTrialApp',
-                contextValue: 'createTrialApp',
-                iconPath: getIconPath('CreateNewProject'),
-                includeInTreeItemPicker: true
-            });
-
-            ti.commandArgs = [];
-            children.push(ti);
         }
 
         return children;

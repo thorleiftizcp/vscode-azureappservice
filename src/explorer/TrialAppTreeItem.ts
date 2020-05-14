@@ -5,7 +5,6 @@
 
 import { Disposable } from 'vscode';
 import { AttachedAccountRoot, ISiteTreeRoot } from 'vscode-azureappservice';
-import { ext } from 'vscode-azureappservice/out/src/extensionVariables';
 import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
 import { AzExtParentTreeItem, AzureTreeItem } from '../../extension.bundle';
 import { ITrialAppMetadata } from '../ITrialAppMetadata';
@@ -75,46 +74,6 @@ export class TrialAppTreeItem extends SiteTreeItem {
 
     public isAncestorOfImpl?(_contextValue: string | RegExp): boolean {
         return false;
-    }
-    public async deleteTreeItemImpl(): Promise<void> {
-        ext.outputChannel.appendLine(`Deleting; ${this.label} Trial app...`);
-
-        const create: requestUtils.Request = await requestUtils.getDefaultRequest('https://tryappservice.azure.com/api/resource', this.client.credentials, 'DELETE');
-
-        create.headers = {
-            accept: "application/json,*/*",
-            "accept-language": "en-US,en;q=0.9",
-            "content-type": "application/json",
-            "ms-x-user-agent": "VsCodeLinux/",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "cross-site"
-        };
-
-        await requestUtils.sendRequest<string>(create);
-    }
-
-    public async extendTrialApp(): Promise<void> {
-        const request: requestUtils.Request = await requestUtils.getDefaultRequest('https://tryappservice.azure.com/api/resource/extend', this.client.credentials, 'POST');
-
-        request.headers = {
-            accept: "*/*",
-            "accept-language": "en-US,en;q=0.9",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            cookie: `loginsession = ${this.metadata.loginSession}`
-        };
-
-        request.auth = { username: this.metadata.publishingUserName, password: this.metadata.publishingPassword };
-
-        try {
-
-            await requestUtils.sendRequest<string>(request);
-
-        } catch (error) {
-            throw error;
-        }
     }
 
     public async getTrialAppMetaData(): Promise<ITrialAppMetadata> {

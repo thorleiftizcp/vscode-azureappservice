@@ -7,14 +7,16 @@
 
 import * as vscode from 'vscode';
 import { registerAppServiceExtensionVariables } from 'vscode-azureappservice';
-import { AzExtTreeDataProvider, AzureUserInput, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, IActionContext, IAzureUserInput, registerUIExtensionVariables } from 'vscode-azureextensionui';
+import {
+    AzExtTreeDataProvider, AzureUserInput, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, IActionContext, IAzureUserInput, registerUIExtensionVariables
+} from 'vscode-azureextensionui';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerCommands } from './commands/registerCommands';
 import { AzureAccountTreeItem } from './explorer/AzureAccountTreeItem';
 import { FileEditor } from './explorer/editors/FileEditor';
 import { ext } from './extensionVariables';
-import { ImportHandler } from './ImportHandler';
+import { ExternalUriHandler } from './ExternalUriHandler';
 
 // tslint:disable-next-line:export-name
 // tslint:disable-next-line:max-func-body-length
@@ -54,7 +56,7 @@ export async function activateInternal(
 
         registerCommands();
         // tslint:disable-next-line: no-unused-expression
-        new ImportHandler();
+        new ExternalUriHandler();
     });
 
     return createApiProvider([<AzureExtensionApi>{

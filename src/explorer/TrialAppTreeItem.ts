@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vscode';
-import { AttachedAccountRoot } from 'vscode-azureappservice';
+import { AttachedAccountRoot, ISiteTreeRoot } from 'vscode-azureappservice';
 import { ext } from 'vscode-azureappservice/out/src/extensionVariables';
 import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
-import { AzExtParentTreeItem } from '../../extension.bundle';
+import { AzExtParentTreeItem, AzureTreeItem } from '../../extension.bundle';
 import { ITrialAppMetadata } from '../ITrialAppMetadata';
 import { TrialAppClient } from '../TrialAppClient';
 import { getIconPath } from '../utils/pathUtils';
@@ -65,6 +65,12 @@ export class TrialAppTreeItem extends SiteTreeItem {
 
     public async refreshImpl(): Promise<void> {
         this.metadata = await this.getTrialAppMetaData();
+    }
+
+    public async loadMoreChildrenImpl(clearCache: boolean): Promise<AzureTreeItem<ISiteTreeRoot>[]> {
+        const children: AzureTreeItem<ISiteTreeRoot>[] = await super.loadMoreChildrenImpl(clearCache);
+        children.pop(); // rmove webjobs tree item
+        return children;
     }
 
     public isAncestorOfImpl?(_contextValue: string | RegExp): boolean {

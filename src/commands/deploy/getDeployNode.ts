@@ -3,13 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable, Uri } from "vscode";
-import { configurationSettings, none } from "../../constants";
-import { SiteTreeItem } from "../../explorer/SiteTreeItem";
-import { WebAppTreeItem } from "../../explorer/WebAppTreeItem";
+import { Disposable, Uri } from 'vscode';
+import { configurationSettings, none } from '../../constants';
+import { SiteTreeItem } from '../../explorer/SiteTreeItem';
+import { TrialAppTreeItem } from '../../explorer/TrialAppTreeItem';
+import { WebAppTreeItem } from '../../explorer/WebAppTreeItem';
 import { ext } from '../../extensionVariables';
-import { getWorkspaceSetting, updateWorkspaceSetting } from "../../vsCodeConfig/settings";
-import { IDeployContext, WebAppSource } from "./IDeployContext";
+import { getWorkspaceSetting, updateWorkspaceSetting } from '../../vsCodeConfig/settings';
+import { IDeployContext, WebAppSource } from './IDeployContext';
 
 export interface IDeployNode {
     node: SiteTreeItem;
@@ -39,7 +40,7 @@ export async function getDeployNode(context: IDeployContext, target: Uri | strin
         const newNodes: SiteTreeItem[] = [];
         const disposable: Disposable = ext.tree.onTreeItemCreate((newNode: SiteTreeItem) => { newNodes.push(newNode); });
         try {
-            node = await ext.tree.showTreeItemPicker<SiteTreeItem>(WebAppTreeItem.contextValue, context);
+            node = await ext.tree.showTreeItemPicker<SiteTreeItem>([WebAppTreeItem.contextValue, TrialAppTreeItem.contextValue], context);
         } finally {
             disposable.dispose();
         }

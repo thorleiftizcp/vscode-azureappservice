@@ -10,6 +10,7 @@ import {
 import { BasicAuthenticationCredentials, ServiceClientCredentials } from 'ms-rest';
 import * as request from 'request';
 import { IFunctionKeys, IHostKeys, ISiteClient } from 'vscode-azureappservice';
+import { ScmType } from 'vscode-azureappservice/out/src/ScmType';
 import { addExtensionUserAgent } from 'vscode-azureextensionui';
 import { KuduClient } from 'vscode-azurekudu';
 import { ITrialAppMetadata } from './ITrialAppMetadata';
@@ -117,7 +118,7 @@ export class TrialAppClient implements ISiteClient {
         this.metadata = await TrialAppClient.getTrialAppMetaData(loginSession || this.metadata.loginSession);
     }
     public async getIsConsumption(): Promise<boolean> {
-        throw new Error('Method not implemented.');
+        return false;
     }
     public async stop(): Promise<void> {
         return;
@@ -238,7 +239,7 @@ export class TrialAppClient implements ISiteClient {
     }
 
     public async getSiteConfig(): Promise<SiteConfigResource> {
-        return {};
+        return { scmType: ScmType.LocalGit };
     }
     public async updateApplicationSettings(appSettings: StringDictionary): Promise<StringDictionary> {
 

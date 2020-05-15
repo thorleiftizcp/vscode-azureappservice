@@ -12,10 +12,8 @@ import * as request from 'request';
 import { IFunctionKeys, IHostKeys, ISiteClient } from 'vscode-azureappservice';
 import { addExtensionUserAgent } from 'vscode-azureextensionui';
 import { KuduClient } from 'vscode-azurekudu';
-import { ext } from './extensionVariables';
 import { ITrialAppMetadata } from './ITrialAppMetadata';
 import { localize } from './localize';
-import { nonNullOrEmptyValue } from './utils/nonNull';
 import { requestUtils } from './utils/requestUtils';
 
 export class TrialAppClient implements ISiteClient {
@@ -51,6 +49,10 @@ export class TrialAppClient implements ISiteClient {
     }
     public get gitUrl(): string | undefined {
         return this.metadata?.gitUrl;
+    }
+
+    public get expired(): boolean {
+        return (isNaN(this.metadata.timeLeft));
     }
 
     /**
@@ -89,11 +91,9 @@ export class TrialAppClient implements ISiteClient {
 
     public static async createTrialAppClient(loginSession: string): Promise<TrialAppClient> {
         const metadata: ITrialAppMetadata = await this.getTrialAppMetaData(loginSession);
-        if (nonNullOrEmptyValue('metadata')) {
+        if (metadata.siteName) {
             return new TrialAppClient(metadata);
         } else {
-            ext.context.globalState.update('trialApp.hasApp', false);
-            ext.context.globalState.update('trialApp.imported', false);
             return Promise.reject('Could not get trial app metadata');
         }
     }
@@ -110,16 +110,11 @@ export class TrialAppClient implements ISiteClient {
             cookie: `loginsession=${loginsession}`
         };
 
-        try {
-            const result: string = await requestUtils.sendRequest<string>(metadataRequest);
-            return <ITrialAppMetadata>JSON.parse(result);
+        return <ITrialAppMetadata>JSON.parse(await requestUtils.sendRequest(metadataRequest));
+    }
 
-        } catch (e) {
-            ext.outputChannel.appendLine(`Error: Unable to fetch trial app metadata.\n ${e}`);
-            ext.context.globalState.update('trialApp.hasApp', false);
-            // ext.context.globalState.update('trialApp.imported', false);
-            throw Error;
-        }
+    public async refreshMetadata(loginSession?: string): Promise<void> {
+        this.metadata = await TrialAppClient.getTrialAppMetaData(loginSession || this.metadata.loginSession);
     }
     public async getIsConsumption(): Promise<boolean> {
         throw new Error('Method not implemented.');

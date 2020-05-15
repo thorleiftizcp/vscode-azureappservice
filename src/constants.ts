@@ -34,8 +34,4 @@ export const envFileName: string = '.env';
 
 export const detectorTimestampFormat: string = 'YYYY-MM-DDTHH:mm';
 
-export enum TrialApp {
-    hasApp = 'trialApp.hasApp',
-    loginSession = 'trialApp.loginsession',
-    imported = 'trialApp.imported'
-}
+export const TrialAppLoginSession = 'trialApp.loginSession';

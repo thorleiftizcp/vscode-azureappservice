@@ -391,7 +391,7 @@
             "view/item/context": [
                 {
                     "command": "appService.RemoveTrialApp",
-                    "when": "view == azureAppService && viewItem =~ /^(trialApp)$/",
+                    "when": "view == azureAppService && viewItem =~ /^(trialApp|expiredTrialApp)$/",
                     "group": "6_trialAppModificationCommands@1"
                 },
                 {

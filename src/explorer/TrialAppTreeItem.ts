@@ -3,32 +3,32 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vscode';
 import { AttachedAccountRoot, ISiteTreeRoot } from 'vscode-azureappservice';
 import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
 import { AzExtParentTreeItem, AzureTreeItem } from '../../extension.bundle';
 import { ITrialAppMetadata } from '../ITrialAppMetadata';
+import { localize } from '../localize';
 import { TrialAppClient } from '../TrialAppClient';
 import { getIconPath } from '../utils/pathUtils';
 import { AzureAccountTreeItem } from './AzureAccountTreeItem';
 import { SiteTreeItem } from './SiteTreeItem';
 
 export class TrialAppTreeItem extends SiteTreeItem {
+    public static contextValue: string = 'trialApp';
+    public readonly contextValue: string = TrialAppTreeItem.contextValue;
 
     public get label(): string {
-        return this.metadata.siteName ? this.metadata.siteName : 'NodeJS Trial App';
+        return this.metadata.siteName ? this.metadata.siteName : localize('nodeJsTrialApp', 'NodeJS Trial App');
+    }
+
+    private get minutesLeft(): number {
+        return this.metadata?.timeLeft / 60;
     }
 
     public get description(): string {
-        const minutesLeft: number = this.metadata.timeLeft / 60;
-        return (isNaN(minutesLeft)) ? 'Expired' : `${minutesLeft.toFixed(0)} min. remaining`;
+        return `${this.minutesLeft.toFixed(0)} ${localize('minutesRemaining', 'min. remaining')}`;
     }
 
-    public static get contextValue(): string {
-        return 'trialApp';
-    }
-
-    public contextValue: string = 'trialApp';
     public timeLeft: number = 60;
     public parent: AzExtParentTreeItem;
     public childTypeLabel: string = 'trialApp';
@@ -42,20 +42,11 @@ export class TrialAppTreeItem extends SiteTreeItem {
 
     public client: TrialAppClient;
 
-    // private readonly _appSettingsNode: AppSettingsTreeItem;
-    // private readonly _deploymentsNode: TrialAppDeploymentTreeItem;
-    private readonly _disposables: Disposable[] = [];
-
     constructor(parent: AzureAccountTreeItem, client: TrialAppClient) {
         super(new AttachedAccountRoot(), client);
         this.client = client;
         this.metadata = client.metadata;
         this.parent = parent;
-    }
-
-    public dispose(): void {
-        // tslint:disable-next-line: no-unsafe-any
-        Disposable.from(...this._disposables).dispose();
     }
 
     public hasMoreChildrenImpl(): boolean {
@@ -73,7 +64,7 @@ export class TrialAppTreeItem extends SiteTreeItem {
     }
 
     public isAncestorOfImpl?(_contextValue: string | RegExp): boolean {
-        return false;
+        return _contextValue === TrialAppTreeItem.contextValue;
     }
 
     public async getTrialAppMetaData(): Promise<ITrialAppMetadata> {

@@ -7,6 +7,7 @@ import { commands, TextDocument, workspace } from 'vscode';
 import { AppSettingTreeItem, FileTreeItem, registerSiteCommand } from 'vscode-azureappservice';
 import { AzureTreeItem, IActionContext, openInPortal as uiOpenInPortal, registerCommand, registerEvent } from 'vscode-azureextensionui';
 import { DeploymentSlotsNATreeItem, ScaleUpTreeItem } from '../explorer/DeploymentSlotsTreeItem';
+import { TrialAppTreeItem } from '../explorer/TrialAppTreeItem';
 import { ext } from '../extensionVariables';
 import { addAppSetting } from './appSettings/addAppSetting';
 import { deleteAppSetting } from './appSettings/deleteAppSettings';
@@ -50,9 +51,9 @@ import { removeTrialApp } from './trialApp/removeTrialApp';
 
 export function registerCommands(): void {
 
-    registerCommand('appService.ImportTrialApp', importTrialApp);
-    registerCommand('appService.CloneTrialApp', cloneTrialApp);
-    registerCommand('appService.RemoveTrialApp', removeTrialApp);
+    registerCommand('appService.ImportTrialApp', async (context: IActionContext, loginSession?: string) => await importTrialApp(context, loginSession));
+    registerCommand('appService.CloneTrialApp', async (context: IActionContext, node?: TrialAppTreeItem) => { context.telemetry.measurements.timeLeft = node?.timeLeft; await cloneTrialApp(context, node); });
+    registerCommand('appService.RemoveTrialApp', async (context: IActionContext, node?: TrialAppTreeItem) => { context.telemetry.measurements.timeLeft = node?.timeLeft; await removeTrialApp(context, node); });
     registerCommand('appService.AddCosmosDBConnection', addCosmosDBConnection);
     registerCommand('appService.appSettings.Add', addAppSetting);
     registerCommand('appService.appSettings.Delete', deleteAppSetting);

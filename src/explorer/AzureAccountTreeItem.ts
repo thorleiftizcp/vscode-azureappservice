@@ -3,16 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProgressLocation, window } from 'vscode';
 import { AzExtTreeItem, AzureAccountTreeItemBase, GenericTreeItem, IActionContext, ISubscriptionContext } from 'vscode-azureextensionui';
-import { TrialApp } from '../constants';
+import { TrialAppLoginSession } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
 import { TrialAppClient } from '../TrialAppClient';
+import { ExpiredTrialAppTreeItem } from './ExpiredTrialAppTreeItem';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
 import { TrialAppTreeItem } from './TrialAppTreeItem';
 
 export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
+
+    public trialAppClient: TrialAppClient | undefined;
+
     public constructor(testAccount?: {}) {
         super(undefined, testAccount);
     }
@@ -24,43 +27,25 @@ export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = await super.loadMoreChildrenImpl(clearCache, context);
 
-        const hasTrialApp: boolean | undefined = ext.context.globalState.get(TrialApp.hasApp);
-        const importedTrialApp: boolean | undefined = ext.context.globalState.get(TrialApp.imported);
-        const loginSession: string | undefined = ext.context.globalState.get(TrialApp.loginSession);
+        const loginSession: string | undefined = ext.context.globalState.get(TrialAppLoginSession);
 
-        if (importedTrialApp && !hasTrialApp) { // importing trial app
-            await window.withProgress({ location: ProgressLocation.Notification, cancellable: false }, async p => {
+        if (loginSession) {
 
-                if (loginSession) {
-                    p.report({ message: localize('importingTrialApp', 'Importing trial app...') });
-                    try {
-                        const trialAppNode: AzExtTreeItem[] = await this.createTreeItemsWithErrorHandling<TrialAppClient>(
-                            [await TrialAppClient.createTrialAppClient(loginSession)],
-                            'invalidTrialApp',
-                            (source: TrialAppClient): TrialAppTreeItem => {
-                                return new TrialAppTreeItem(ext.azureAccountTreeItem, source);
-                            },
-                            (source: TrialAppClient): string | Promise<string | undefined> => source.metadata?.siteName
-                        );
+            this.trialAppClient = this.trialAppClient ?? await TrialAppClient.createTrialAppClient(loginSession);
 
-                        children.push(trialAppNode[0]);
-                        ext.treeView.reveal(trialAppNode[0], { expand: 2, select: true, focus: true });
-                        ext.context.globalState.update(TrialApp.hasApp, true);
-                    } catch (error) {
-                        window.showErrorMessage(localize('trialAppCouldNotBeImportedExpired', 'App could not be imported. Trial app has expired.'));
-                        ext.context.globalState.update(TrialApp.hasApp, false);
-                    }
-                }
+            const createTreeItem = async (source: TrialAppClient): Promise<TrialAppTreeItem> => {
+                return source.expired ? new ExpiredTrialAppTreeItem(this, source) : new TrialAppTreeItem(this, source);
+            };
 
-            });
-            ext.context.globalState.update(TrialApp.imported, false);
-        } else { // trial app already imported
-            if (ext.context.globalState.get(TrialApp.hasApp) === true) {
-                if (loginSession) {
-                    const trialAppNode = new TrialAppTreeItem(this, await TrialAppClient.createTrialAppClient(loginSession));
-                    children.push(trialAppNode);
-                }
-            }
+            const getLabelOnError = (source: TrialAppClient): string | Promise<string | undefined> => {
+                return source.metadata?.siteName ?? localize('couldNotGetTrialApp', 'An error occured while fetching trial app.');
+            };
+
+            const trialAppNode: AzExtTreeItem[] =
+                await this.createTreeItemsWithErrorHandling<TrialAppClient>([this.trialAppClient], ExpiredTrialAppTreeItem.contextValue, createTreeItem, getLabelOnError);
+
+            children.push(trialAppNode[0]);
+            ext.context.globalState.update(TrialAppLoginSession, this.trialAppClient.metadata.loginSession);
         }
 
         return children;

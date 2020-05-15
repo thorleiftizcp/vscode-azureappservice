@@ -15,23 +15,27 @@ import { SiteTreeItem } from './SiteTreeItem';
 
 export class TrialAppTreeItem extends SiteTreeItem {
     public static contextValue: string = 'trialApp';
-    public readonly contextValue: string = TrialAppTreeItem.contextValue;
+    public contextValue: string = TrialAppTreeItem.contextValue;
 
     public get label(): string {
         return this.metadata.siteName ? this.metadata.siteName : localize('nodeJsTrialApp', 'NodeJS Trial App');
     }
 
     private get minutesLeft(): number {
-        return this.metadata?.timeLeft / 60;
+        return (this.metadata?.timeLeft / 60);
     }
 
     public get description(): string {
-        return `${this.minutesLeft.toFixed(0)} ${localize('minutesRemaining', 'min. remaining')}`;
+        return isNaN(this.minutesLeft) ?
+            localize('expired', 'Expired') : `${this.minutesLeft.toFixed(0)} ${localize('minutesRemaining', 'min. remaining')}`;
     }
 
     public timeLeft: number = 60;
+
     public parent: AzExtParentTreeItem;
+
     public childTypeLabel: string = 'trialApp';
+
     public id: string;
 
     public readonly iconPath: string = getIconPath('WebApp');

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { commands, MessageItem, ProgressLocation, window } from 'vscode';
-import { IActionContext } from 'vscode-azureextensionui';
+import { AzExtTreeItem, IActionContext } from 'vscode-azureextensionui';
 import { TrialAppLoginSession } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../localize';
@@ -53,10 +53,12 @@ export async function importTrialApp(_context: IActionContext, loginSession?: st
             }
 
             if (importExpiredApp) {
+                await commands.executeCommand('workbench.view.extension.azure');
                 ext.azureAccountTreeItem.trialAppClient = client;
                 ext.context.globalState.update(TrialAppLoginSession, loginSession);
-                await commands.executeCommand('workbench.view.extension.azure');
                 await ext.azureAccountTreeItem.refresh();
+                const children: AzExtTreeItem[] = await ext.azureAccountTreeItem.getCachedChildren(_context);
+                await ext.treeView.reveal(children[children.length - 1], { select: false, focus: true, expand: 1 });
             }
         });
     }

@@ -8,7 +8,7 @@ import { DotenvParseOutput } from 'dotenv';
 import * as fse from 'fs-extra';
 import * as os from 'os';
 import * as vscode from 'vscode';
-import { TextDocument, window } from 'vscode';
+import { window } from 'vscode';
 import { AppSettingsTreeItem, confirmOverwriteSettings, ISiteClient } from 'vscode-azureappservice';
 import { IActionContext, UserCancelledError } from 'vscode-azureextensionui';
 import { envFileName } from '../../constants';
@@ -43,8 +43,8 @@ export async function downloadAppSettings(context: IActionContext, node?: AppSet
         if (!input) {
             throw new UserCancelledError();
         }
-        const doc: TextDocument = await vscode.workspace.openTextDocument(envVarUri);
-        await window.showTextDocument(doc);
+        const doc: vscode.TextDocument = await vscode.workspace.openTextDocument(envVarUri);
+        await vscode.window.showTextDocument(doc);
     });
 }
 

@@ -15,7 +15,7 @@ import { ext } from '../../extensionVariables';
 import { javaUtils } from '../../utils/javaUtils';
 import { nonNullValue } from '../../utils/nonNull';
 import { isPathEqual } from '../../utils/pathUtils';
-import { getRandomHexString } from "../../utils/randomUtils";
+import { getRandomHexString } from '../../utils/randomUtils';
 import { getWorkspaceSetting } from '../../vsCodeConfig/settings';
 import { runPostDeployTask } from '../postDeploy/runPostDeployTask';
 import { confirmDeploymentPrompt } from './confirmDeploymentPrompt';
@@ -58,9 +58,7 @@ export async function deploy(context: IActionContext, target?: vscode.Uri | Site
     siteConfig = siteConfig ? siteConfig : await node.root.client.getSiteConfig();
 
     if (javaUtils.isJavaRuntime(siteConfig.linuxFxVersion)) {
-        if (node instanceof SiteTreeItem) {
-            await javaUtils.configureJavaSEAppSettings(node);
-        }
+        await javaUtils.configureJavaSEAppSettings(node);
     }
 
     const isZipDeploy: boolean = siteConfig.scmType !== constants.ScmType.LocalGit && siteConfig !== constants.ScmType.GitHub;

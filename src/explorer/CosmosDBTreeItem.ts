@@ -58,7 +58,6 @@ export class CosmosDBTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
         const cosmosDBApi = await this.getCosmosDBApi();
         // tslint:disable-next-line:strict-boolean-expressions
         const appSettings = (await this.root.client.listApplicationSettings()).properties || {};
-
         const connections: IDetectedConnection[] = this.detectMongoConnections(appSettings).concat(this.detectDocDBConnections(appSettings));
         const treeItems = await this.createTreeItemsWithErrorHandling(
             connections,

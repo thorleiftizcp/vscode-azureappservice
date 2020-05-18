@@ -11,10 +11,18 @@ import { ICreateChildImplContext, LocationListStep } from 'vscode-azureextension
 import { javaUtils } from '../../utils/javaUtils';
 import { findFilesByFileExtension, getSingleRootWorkspace } from '../../utils/workspace';
 import { IDeployContext } from '../deploy/IDeployContext';
+import { IConvertContext } from '../trialApp/convertTrialApp';
 
-export async function setPrePromptDefaults(wizardContext: IAppServiceWizardContext & Partial<IDeployContext> & Partial<ICreateChildImplContext>): Promise<void> {
+export async function setPrePromptDefaults(wizardContext: IAppServiceWizardContext & Partial<IDeployContext> & Partial<ICreateChildImplContext> & Partial<IConvertContext>): Promise<void> {
     // if the user entered through "Deploy", we'll have a project to base our recommendations on
     // otherwise, look at their current workspace and only suggest if one workspace is opened
+
+    if (wizardContext.trialAppMetadata) {
+        wizardContext.newSiteOS = WebsiteOS.linux;
+        wizardContext.newSiteRuntime = 'NODE|lts';
+        wizardContext.recommendedNewSiteName = wizardContext.trialAppMetadata.siteName;
+    }
+
     const workspaceForRecommendation: WorkspaceFolder | undefined = getSingleRootWorkspace(wizardContext);
 
     if (workspaceForRecommendation) {

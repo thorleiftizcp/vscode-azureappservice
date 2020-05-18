@@ -46,11 +46,13 @@ import { startWebApp } from './startWebApp';
 import { stopWebApp } from './stopWebApp';
 import { swapSlots } from './swapSlots';
 import { cloneTrialApp } from './trialApp/cloneTrialApp';
+import { convertTrialApp } from './trialApp/convertTrialApp';
 import { importTrialApp } from './trialApp/importTrialApp';
 import { removeTrialApp } from './trialApp/removeTrialApp';
 
 export function registerCommands(): void {
 
+    registerCommand('appService.TransferTrialToSubscription', convertTrialApp);
     registerCommand('appService.ImportTrialApp', async (context: IActionContext, loginSession?: string) => await importTrialApp(context, loginSession));
     registerCommand('appService.CloneTrialApp', async (context: IActionContext, node?: TrialAppTreeItem) => { context.telemetry.measurements.timeLeft = node?.timeLeft; await cloneTrialApp(context, node); });
     registerCommand('appService.RemoveTrialApp', async (context: IActionContext, node?: TrialAppTreeItem) => { context.telemetry.measurements.timeLeft = node?.timeLeft; await removeTrialApp(context, node); });

@@ -14,8 +14,6 @@ import { AzureAccountTreeItem } from './AzureAccountTreeItem';
 import { SiteTreeItem } from './SiteTreeItem';
 
 export class TrialAppTreeItem extends SiteTreeItem {
-    public static contextValue: string = 'trialApp';
-    public contextValue: string = TrialAppTreeItem.contextValue;
 
     public get label(): string {
         return this.metadata.siteName ? this.metadata.siteName : localize('nodeJsTrialApp', 'NodeJS Trial App');
@@ -29,12 +27,12 @@ export class TrialAppTreeItem extends SiteTreeItem {
         return isNaN(this.minutesLeft) ?
             localize('expired', 'Expired') : `${this.minutesLeft.toFixed(0)} ${localize('minutesRemaining', 'min. remaining')}`;
     }
+    public static contextValue: string = 'trialApp';
+    public contextValue: string = TrialAppTreeItem.contextValue;
 
     public timeLeft: number = 60;
 
     public parent: AzExtParentTreeItem;
-
-    public childTypeLabel: string = 'trialApp';
 
     public id: string;
 
@@ -51,6 +49,10 @@ export class TrialAppTreeItem extends SiteTreeItem {
         this.client = client;
         this.metadata = client.metadata;
         this.parent = parent;
+    }
+
+    public async isHttpLogsEnabled(): Promise<boolean> {
+        return Promise.resolve(true);
     }
 
     public hasMoreChildrenImpl(): boolean {

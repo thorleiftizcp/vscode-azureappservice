@@ -6,6 +6,7 @@
 import { commands, MessageItem, ProgressLocation, window } from 'vscode';
 import { AzExtTreeItem, IActionContext } from 'vscode-azureextensionui';
 import { TrialAppLoginSession } from '../../constants';
+import { TrialAppTreeItem } from '../../explorer/TrialAppTreeItem';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../localize';
 import { TrialAppClient } from '../../TrialAppClient';
@@ -58,7 +59,30 @@ export async function importTrialApp(_context: IActionContext, loginSession?: st
                 ext.context.globalState.update(TrialAppLoginSession, loginSession);
                 await ext.azureAccountTreeItem.refresh();
                 const children: AzExtTreeItem[] = await ext.azureAccountTreeItem.getCachedChildren(_context);
-                await ext.treeView.reveal(children[children.length - 1], { select: false, focus: true, expand: 1 });
+
+                const trialAppTreeItem: TrialAppTreeItem | undefined = <TrialAppTreeItem>children.find((value: AzExtTreeItem) => {
+                    return value instanceof TrialAppTreeItem;
+                });
+
+                const clone: MessageItem = { title: 'Clone' };
+                const no: MessageItem = { title: 'No' };
+
+                if (trialAppTreeItem !== undefined) {
+                    await ext.treeView.reveal(children[children.length - 1], { select: false, focus: true, expand: 1 });
+                    window.showInformationMessage(localize('cloneTrialApp', 'Succesfully imported trial app. Would you like to clone the source?'), { modal: true }, clone, no).then((value: MessageItem) => {
+                        if (value.title === clone.title) {
+                            commands.executeCommand('git.clone', client.metadata.gitUrl).then((path: unknown) => {
+                                const disableHints: MessageItem = { title: localize('disableHints', 'Disable trial app hints') };
+                                const takeMeToScm: MessageItem = { title: localize('takeMeToScm', 'View source control') };
+                                window.showInformationMessage(localize('pushToDeploy', 'Commit and push to deploy changes to your app.'), takeMeToScm, disableHints).then((response: MessageItem) => {
+                                    if (response.title === takeMeToScm.title) {
+                                        commands.executeCommand('workbench.view.scm');
+                                    }
+                                });
+                            });
+                        }
+                    });
+                }
             }
         });
     }

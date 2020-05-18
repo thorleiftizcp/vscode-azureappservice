@@ -15,6 +15,7 @@ import { addExtensionUserAgent } from 'vscode-azureextensionui';
 import { KuduClient } from 'vscode-azurekudu';
 import { ITrialAppMetadata } from './ITrialAppMetadata';
 import { localize } from './localize';
+import { nonNullProp } from './utils/nonNull';
 import { requestUtils } from './utils/requestUtils';
 
 export class TrialAppClient implements ISiteClient {
@@ -22,21 +23,11 @@ export class TrialAppClient implements ISiteClient {
         return this.metadata.hostName;
     }
 
-    public get kuduHostName(): string {
-        return this.metadata.scmHostName;
-    }
+    public readonly kuduHostName: string;
 
-    public get defaultHostUrl(): string {
-        return `https://${this.metadata.hostName}`;
-    }
+    public readonly defaultHostUrl: string;
 
-    public get kuduUrl(): string | undefined {
-        if (this.metadata?.scmHostName) {
-            return `https://${this.metadata.scmHostName}`;
-        } else {
-            return undefined;
-        }
-    }
+    public readonly kuduUrl: string;
 
     public get siteName(): string {
         return this.metadata?.siteName;
@@ -45,9 +36,7 @@ export class TrialAppClient implements ISiteClient {
         return this.metadata?.siteGuid;
     }
 
-    public get defaultHostName(): string {
-        return this.metadata?.hostName;
-    }
+    public readonly defaultHostName: string;
     public get gitUrl(): string | undefined {
         return this.metadata?.gitUrl;
     }
@@ -88,6 +77,11 @@ export class TrialAppClient implements ISiteClient {
     private constructor(metadata: ITrialAppMetadata) {
         this.metadata = metadata;
         this.credentials = new BasicAuthenticationCredentials(metadata.publishingUserName, metadata.publishingPassword);
+
+        this.defaultHostName = nonNullProp(this.metadata, 'hostName');
+        this.defaultHostUrl = `https://${this.defaultHostName}`;
+        this.kuduUrl = `https://${this.metadata.scmHostName}`;
+        this.kuduHostName = this.metadata.scmHostName;
     }
 
     public static async createTrialAppClient(loginSession: string): Promise<TrialAppClient> {

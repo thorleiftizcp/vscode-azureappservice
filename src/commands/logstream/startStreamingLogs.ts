@@ -5,7 +5,7 @@
 
 import * as appservice from 'vscode-azureappservice';
 import { IActionContext } from 'vscode-azureextensionui';
-import { SiteTreeItem } from "../../explorer/SiteTreeItem";
+import { SiteTreeItem } from '../../explorer/SiteTreeItem';
 import { WebAppTreeItem } from '../../explorer/WebAppTreeItem';
 import { ext } from '../../extensionVariables';
 import { enableFileLogging } from './enableFileLogging';
@@ -16,9 +16,7 @@ export async function startStreamingLogs(context: IActionContext, node?: SiteTre
     }
 
     const verifyLoggingEnabled: () => Promise<void> = async (): Promise<void> => {
-        if (node instanceof SiteTreeItem) {
-            await enableFileLogging({ ...context, suppressAlreadyEnabledMessage: true }, node);
-        }
+        await enableFileLogging({ ...context, suppressAlreadyEnabledMessage: true }, node);
     };
 
     await appservice.startStreamingLogs(node.root.client, verifyLoggingEnabled, node.logStreamLabel);

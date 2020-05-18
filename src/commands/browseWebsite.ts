@@ -10,9 +10,9 @@ import { ext } from "../extensionVariables";
 import { openUrl } from "../utils/openUrl";
 
 export async function browseWebsite(context: IActionContext, node?: SiteTreeItem): Promise<void> {
-
     if (!node) {
         node = await ext.tree.showTreeItemPicker<WebAppTreeItem>(WebAppTreeItem.contextValue, context);
     }
+
     await openUrl(node.root.client.defaultHostUrl);
 }

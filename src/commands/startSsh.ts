@@ -59,7 +59,6 @@ async function startSshInternal(node: SiteTreeItem): Promise<void> {
         const confirmDisableMessage: string = 'Remote debugging must be disabled in order to SSH. This will restart the app.';
         const siteConfig: SiteConfigResource = await siteClient.getSiteConfig();
         // remote debugging has to be disabled in order to tunnel to the 2222 port
-
         await setRemoteDebug(false, confirmDisableMessage, undefined, siteClient, siteConfig, progress, token);
 
         reportMessage('Initializing SSH...', progress, token);

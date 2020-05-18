@@ -4,7 +4,7 @@
     "description": "An Azure App Service management extension for Visual Studio Code.",
     "version": "0.16.6-alpha",
     "publisher": "ms-azuretools",
-    "": "resources/WebApp.png",
+    "icon": "resources/WebApp.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "engines": {
         "vscode": "^1.31.0"
@@ -29,6 +29,7 @@
     ],
     "preview": true,
     "activationEvents": [
+        "onCommand:appService.TransferTrialToSubscription",
         "onCommand:appService.RemoveTrialApp",
         "onCommand:appService.ImportTrialApp",
         "onCommand:appService.CreateWebApp",
@@ -240,6 +241,11 @@
                 "category": "Azure App Service"
             },
             {
+                "command": "appService.TransferTrialToSubscription",
+                "title": "Transfer app to Azure subscription",
+                "category": "Azure App Service"
+            },
+            {
                 "command": "appService.CloneTrialApp",
                 "title": "Clone app source",
                 "category": "Azure App Service"
@@ -391,6 +397,11 @@
             "view/item/context": [
                 {
                     "command": "appService.RemoveTrialApp",
+                    "when": "view == azureAppService && viewItem =~ /^(trialApp|expiredTrialApp)$/",
+                    "group": "6_trialAppModificationCommands@1"
+                },
+                {
+                    "command": "appService.TransferTrialToSubscription",
                     "when": "view == azureAppService && viewItem =~ /^(trialApp|expiredTrialApp)$/",
                     "group": "6_trialAppModificationCommands@1"
                 },

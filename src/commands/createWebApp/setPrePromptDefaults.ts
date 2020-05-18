@@ -20,7 +20,7 @@ export async function setPrePromptDefaults(wizardContext: IAppServiceWizardConte
     if (wizardContext.trialAppMetadata) {
         wizardContext.newSiteOS = WebsiteOS.linux;
         wizardContext.newSiteRuntime = 'NODE|lts';
-        wizardContext.recommendedNewSiteName = wizardContext.trialAppMetadata.siteName;
+        wizardContext.recommendedNewSiteName = `${wizardContext.trialAppMetadata.siteName}-Azure`;
     }
 
     const workspaceForRecommendation: WorkspaceFolder | undefined = getSingleRootWorkspace(wizardContext);

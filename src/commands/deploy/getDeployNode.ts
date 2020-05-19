@@ -40,7 +40,11 @@ export async function getDeployNode(context: IDeployContext, target: Uri | strin
         const newNodes: SiteTreeItem[] = [];
         const disposable: Disposable = ext.tree.onTreeItemCreate((newNode: SiteTreeItem) => { newNodes.push(newNode); });
         try {
-            node = await ext.tree.showTreeItemPicker<SiteTreeItem>([WebAppTreeItem.contextValue, TrialAppTreeItem.contextValue], context);
+            if (isNewWebApp) {
+                node = await ext.tree.showTreeItemPicker<SiteTreeItem>([WebAppTreeItem.contextValue], context);
+            } else {
+                node = await ext.tree.showTreeItemPicker<SiteTreeItem>([WebAppTreeItem.contextValue, TrialAppTreeItem.contextValue], context);
+            }
         } finally {
             disposable.dispose();
         }

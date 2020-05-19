@@ -76,6 +76,12 @@ export class TrialAppTreeItem extends SiteTreeItem {
         return _contextValue === TrialAppTreeItem.contextValue;
     }
 
+    public compareChildrenImpl(ti1: AzureTreeItem<ISiteTreeRoot>, ti2: AzureTreeItem<ISiteTreeRoot>): number {
+        if (ti1 instanceof TrialAppChecklist) {
+            return -1;
+        }
+        return ti1.label.localeCompare(ti2.label);
+    }
     public async getTrialAppMetaData(): Promise<ITrialAppMetadata> {
         const metadataRequest: requestUtils.Request = await requestUtils.getDefaultRequest('https://tryappservice.azure.com/api/vscoderesource', undefined, 'GET');
 

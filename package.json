@@ -146,6 +146,11 @@
                 "category": "Azure App Service"
             },
             {
+                "command": "appService.ResetChecklist",
+                "title": "Reset checklist",
+                "category": "Azure App Service"
+            },
+            {
                 "command": "appService.Delete",
                 "title": "Delete...",
                 "category": "Azure App Service"
@@ -388,6 +393,10 @@
                 {
                     "command": "appService.ChecklistAction",
                     "when": "never"
+                },
+                {
+                    "command": "appService.ResetChecklist",
+                    "when": "never"
                 }
             ],
             "view/title": [
@@ -408,6 +417,11 @@
                 }
             ],
             "view/item/context": [
+                {
+                    "command": "appService.ResetChecklist",
+                    "when": "view == azureAppService && viewItem =~ /^(trialAppChecklist)$/",
+                    "group": "6_trialAppModificationCommands@1"
+                },
                 {
                     "command": "appService.RemoveTrialApp",
                     "when": "view == azureAppService && viewItem =~ /^(trialApp|expiredTrialApp)$/",

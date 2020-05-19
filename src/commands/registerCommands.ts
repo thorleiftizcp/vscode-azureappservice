@@ -50,9 +50,11 @@ import { cloneTrialApp } from './trialApp/cloneTrialApp';
 import { convertTrialApp } from './trialApp/convertTrialApp';
 import { importTrialApp } from './trialApp/importTrialApp';
 import { removeTrialApp } from './trialApp/removeTrialApp';
+import { resetChecklist } from './trialApp/resetChecklist';
 
 export function registerCommands(): void {
 
+    registerCommand('appService.ResetChecklist', resetChecklist);
     registerCommand('appService.ChecklistAction', checklistItemAction);
     registerCommand('appService.TransferTrialToSubscription', convertTrialApp);
     registerCommand('appService.ImportTrialApp', async (context: IActionContext, loginSession?: string) => await importTrialApp(context, loginSession));

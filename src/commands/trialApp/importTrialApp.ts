@@ -66,7 +66,7 @@ export async function importTrialApp(_context: IActionContext, loginSession?: st
                 });
 
                 if (trialAppTreeItem !== undefined) {
-                    await ext.treeView.reveal(children[children.length - 1], { select: false, focus: true, expand: 1 });
+                    await ext.treeView.reveal(trialAppTreeItem, { select: false, focus: true, expand: 1 });
                 }
             }
         });

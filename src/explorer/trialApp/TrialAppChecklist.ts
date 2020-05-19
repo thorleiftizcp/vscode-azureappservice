@@ -14,7 +14,7 @@ import { TrialAppTreeItem } from './TrialAppTreeItem';
 
 export class TrialAppChecklist extends AzureParentTreeItem<ISiteTreeRoot> {
     public label: string = 'Trial App Checklist';
-    public contextValue: string;
+    public contextValue: string = 'trialAppChecklist';
     public checklistItems: TrialAppChecklistItem[];
     public iconPath: ThemeIcon = new ThemeIcon('checklist');
 

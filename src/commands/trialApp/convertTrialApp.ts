@@ -5,8 +5,7 @@
 
 import { MessageItem, window } from 'vscode';
 import { DialogResponses, IActionContext } from 'vscode-azureextensionui';
-import { ExpiredTrialAppTreeItem } from '../../explorer/ExpiredTrialAppTreeItem';
-import { TrialAppTreeItem } from '../../explorer/TrialAppTreeItem';
+import { TrialAppTreeItem } from '../../explorer/trialApp/TrialAppTreeItem';
 import { ext } from '../../extensionVariables';
 import { ITrialAppMetadata } from '../../ITrialAppMetadata';
 import { localize } from '../../localize';
@@ -18,7 +17,7 @@ export interface IConvertContext extends IActionContext {
 
 export async function convertTrialApp(context: IActionContext, node?: TrialAppTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<TrialAppTreeItem>([TrialAppTreeItem.contextValue, ExpiredTrialAppTreeItem.contextValue], context);
+        node = await ext.tree.showTreeItemPicker<TrialAppTreeItem>([TrialAppTreeItem.contextValue], context);
     }
 
     const convertContext: IConvertContext = Object.assign({ trialAppMetadata: node.metadata }, context);

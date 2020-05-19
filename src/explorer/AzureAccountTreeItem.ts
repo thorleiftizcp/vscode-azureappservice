@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtTreeItem, AzureAccountTreeItemBase, GenericTreeItem, IActionContext, ISubscriptionContext } from 'vscode-azureextensionui';
-import { TrialAppLoginSession } from '../constants';
+import { TrialAppState } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../localize';
-import { TrialAppClient } from '../TrialAppClient';
-import { ExpiredTrialAppTreeItem } from './ExpiredTrialAppTreeItem';
+import { ITrialAppState, TrialAppClient } from '../TrialAppClient';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
-import { TrialAppTreeItem } from './TrialAppTreeItem';
+import { ExpiredTrialAppTreeItem } from './trialApp/ExpiredTrialAppTreeItem';
+import { TrialAppTreeItem } from './trialApp/TrialAppTreeItem';
 
 export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
 
@@ -27,9 +27,10 @@ export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = await super.loadMoreChildrenImpl(clearCache, context);
 
-        const loginSession: string | undefined = ext.context.globalState.get(TrialAppLoginSession);
+        const trialAppState: ITrialAppState | undefined = ext.context.globalState.get(TrialAppState);
+        const loginSession: string | undefined = trialAppState?.loginSession;
 
-        if (loginSession) {
+        if (loginSession && trialAppState) {
 
             this.trialAppClient = this.trialAppClient ?? await TrialAppClient.createTrialAppClient(loginSession);
 
@@ -45,7 +46,8 @@ export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
                 await this.createTreeItemsWithErrorHandling<TrialAppClient>([this.trialAppClient], ExpiredTrialAppTreeItem.contextValue, createTreeItem, getLabelOnError);
 
             children.push(trialAppNode[0]);
-            ext.context.globalState.update(TrialAppLoginSession, this.trialAppClient.metadata.loginSession);
+            trialAppState.loginSession = this.trialAppClient.metadata.loginSession;
+            ext.context.globalState.update(TrialAppState, trialAppState);
         }
 
         return children;

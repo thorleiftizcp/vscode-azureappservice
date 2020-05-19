@@ -5,11 +5,11 @@
 
 import { commands, MessageItem, ProgressLocation, window } from 'vscode';
 import { AzExtTreeItem, IActionContext } from 'vscode-azureextensionui';
-import { TrialAppLoginSession } from '../../constants';
-import { TrialAppTreeItem } from '../../explorer/TrialAppTreeItem';
+import { TrialAppState } from '../../constants';
+import { TrialAppTreeItem } from '../../explorer/trialApp/TrialAppTreeItem';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../localize';
-import { TrialAppClient } from '../../TrialAppClient';
+import { ITrialAppState, TrialAppClient } from '../../TrialAppClient';
 
 export async function importTrialApp(_context: IActionContext, loginSession?: string): Promise<void> {
 
@@ -18,7 +18,7 @@ export async function importTrialApp(_context: IActionContext, loginSession?: st
         throw Error('No loginSession provided');
     }
 
-    const hasTrialApp: boolean = ext.context.globalState.get(TrialAppLoginSession) !== undefined;
+    const hasTrialApp: boolean = ext.context.globalState.get(TrialAppState) !== undefined;
 
     let shouldImport: boolean = true;
     let importExpiredApp: boolean = true;
@@ -56,7 +56,8 @@ export async function importTrialApp(_context: IActionContext, loginSession?: st
             if (importExpiredApp) {
                 await commands.executeCommand('workbench.view.extension.azure');
                 ext.azureAccountTreeItem.trialAppClient = client;
-                ext.context.globalState.update(TrialAppLoginSession, loginSession);
+                const trialAppState: ITrialAppState = { loginSession: loginSession, checklist: {} };
+                ext.context.globalState.update(TrialAppState, trialAppState);
                 await ext.azureAccountTreeItem.refresh();
                 const children: AzExtTreeItem[] = await ext.azureAccountTreeItem.getCachedChildren(_context);
 
@@ -64,24 +65,8 @@ export async function importTrialApp(_context: IActionContext, loginSession?: st
                     return value instanceof TrialAppTreeItem;
                 });
 
-                const clone: MessageItem = { title: 'Clone' };
-                const no: MessageItem = { title: 'No' };
-
                 if (trialAppTreeItem !== undefined) {
                     await ext.treeView.reveal(children[children.length - 1], { select: false, focus: true, expand: 1 });
-                    window.showInformationMessage(localize('cloneTrialApp', 'Succesfully imported trial app. Would you like to clone the source?'), { modal: true }, clone, no).then((value: MessageItem) => {
-                        if (value.title === clone.title) {
-                            commands.executeCommand('git.clone', client.metadata.gitUrl).then((path: unknown) => {
-                                const disableHints: MessageItem = { title: localize('disableHints', 'Disable trial app hints') };
-                                const takeMeToScm: MessageItem = { title: localize('takeMeToScm', 'View source control') };
-                                window.showInformationMessage(localize('pushToDeploy', 'Commit and push to deploy changes to your app.'), takeMeToScm, disableHints).then((response: MessageItem) => {
-                                    if (response.title === takeMeToScm.title) {
-                                        commands.executeCommand('workbench.view.scm');
-                                    }
-                                });
-                            });
-                        }
-                    });
                 }
             }
         });

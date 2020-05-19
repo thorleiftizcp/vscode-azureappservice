@@ -6,7 +6,7 @@
 import { Disposable, Uri } from 'vscode';
 import { configurationSettings, none } from '../../constants';
 import { SiteTreeItem } from '../../explorer/SiteTreeItem';
-import { TrialAppTreeItem } from '../../explorer/TrialAppTreeItem';
+import { TrialAppTreeItem } from '../../explorer/trialApp/TrialAppTreeItem';
 import { WebAppTreeItem } from '../../explorer/WebAppTreeItem';
 import { ext } from '../../extensionVariables';
 import { getWorkspaceSetting, updateWorkspaceSetting } from '../../vsCodeConfig/settings';

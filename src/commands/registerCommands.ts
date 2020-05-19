@@ -7,7 +7,7 @@ import { commands, TextDocument, workspace } from 'vscode';
 import { AppSettingTreeItem, FileTreeItem, registerSiteCommand } from 'vscode-azureappservice';
 import { AzureTreeItem, IActionContext, openInPortal as uiOpenInPortal, registerCommand, registerEvent } from 'vscode-azureextensionui';
 import { DeploymentSlotsNATreeItem, ScaleUpTreeItem } from '../explorer/DeploymentSlotsTreeItem';
-import { TrialAppTreeItem } from '../explorer/TrialAppTreeItem';
+import { TrialAppTreeItem } from '../explorer/trialApp/TrialAppTreeItem';
 import { ext } from '../extensionVariables';
 import { addAppSetting } from './appSettings/addAppSetting';
 import { deleteAppSetting } from './appSettings/deleteAppSettings';
@@ -45,6 +45,7 @@ import { startSsh } from './startSsh';
 import { startWebApp } from './startWebApp';
 import { stopWebApp } from './stopWebApp';
 import { swapSlots } from './swapSlots';
+import { checklistItemAction } from './trialApp/checklistItemAction';
 import { cloneTrialApp } from './trialApp/cloneTrialApp';
 import { convertTrialApp } from './trialApp/convertTrialApp';
 import { importTrialApp } from './trialApp/importTrialApp';
@@ -52,6 +53,7 @@ import { removeTrialApp } from './trialApp/removeTrialApp';
 
 export function registerCommands(): void {
 
+    registerCommand('appService.ChecklistAction', checklistItemAction);
     registerCommand('appService.TransferTrialToSubscription', convertTrialApp);
     registerCommand('appService.ImportTrialApp', async (context: IActionContext, loginSession?: string) => await importTrialApp(context, loginSession));
     registerCommand('appService.CloneTrialApp', async (context: IActionContext, node?: TrialAppTreeItem) => { context.telemetry.measurements.timeLeft = node?.timeLeft; await cloneTrialApp(context, node); });

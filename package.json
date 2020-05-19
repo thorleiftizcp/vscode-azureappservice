@@ -7,7 +7,7 @@
     "icon": "resources/WebApp.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "engines": {
-        "vscode": "^1.31.0"
+        "vscode": "^1.42.0"
     },
     "repository": {
         "type": "git",
@@ -318,6 +318,15 @@
                     "light": "resources/light/Visible_Visible_16x.svg",
                     "dark": "resources/dark/Visible_Visible_16x.svg"
                 }
+            },
+            {
+                "command": "appService.ChecklistAction",
+                "title": "Complete this item",
+                "category": "Azure App Service",
+                "icon": {
+                    "light": "resources/light/Visible_Visible_16x.svg",
+                    "dark": "resources/dark/Visible_Visible_16x.svg"
+                }
             }
         ],
         "viewsContainers": {
@@ -374,6 +383,10 @@
                 },
                 {
                     "command": "appService.toggleAppSettingVisibility",
+                    "when": "never"
+                },
+                {
+                    "command": "appService.ChecklistAction",
                     "when": "never"
                 }
             ],
@@ -603,6 +616,11 @@
                 {
                     "command": "appService.toggleAppSettingVisibility",
                     "when": "view == azureAppService && viewItem == applicationSettingItem",
+                    "group": "inline"
+                },
+                {
+                    "command": "appService.ChecklistAction",
+                    "when": "view == azureAppService && viewItem == checklistItem",
                     "group": "inline"
                 },
                 {
@@ -845,7 +863,7 @@
         "@types/mocha": "^7.0.2",
         "@types/node": "^10.0.0",
         "@types/request-promise": "4.1.41",
-        "@types/vscode": "1.31.0",
+        "@types/vscode": "1.42.0",
         "glob": "^7.1.6",
         "gulp": "^4.0.2",
         "mocha": "^7.1.1",

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext } from 'vscode-azureextensionui';
-import { TrialAppLoginSession } from '../../constants';
-import { TrialAppTreeItem } from '../../explorer/TrialAppTreeItem';
+import { TrialAppState } from '../../constants';
+import { TrialAppTreeItem } from '../../explorer/trialApp/TrialAppTreeItem';
 import { ext } from '../../extensionVariables';
 
 export async function removeTrialApp(context: IActionContext, node?: TrialAppTreeItem): Promise<void> {
@@ -13,7 +13,7 @@ export async function removeTrialApp(context: IActionContext, node?: TrialAppTre
         node = await ext.tree.showTreeItemPicker<TrialAppTreeItem>(TrialAppTreeItem.contextValue, context);
     }
 
-    ext.context.globalState.update(TrialAppLoginSession, undefined);
+    ext.context.globalState.update(TrialAppState, undefined);
     delete ext.azureAccountTreeItem.trialAppClient;
     await ext.tree.refresh();
 }

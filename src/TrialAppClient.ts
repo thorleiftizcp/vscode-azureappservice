@@ -18,6 +18,11 @@ import { localize } from './localize';
 import { nonNullProp } from './utils/nonNull';
 import { requestUtils } from './utils/requestUtils';
 
+export interface ITrialAppState {
+    loginSession: string;
+    checklist: { [label: string]: boolean };
+}
+
 export class TrialAppClient implements ISiteClient {
     public get fullName(): string {
         return this.metadata.hostName;

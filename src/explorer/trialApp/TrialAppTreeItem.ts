@@ -5,13 +5,14 @@
 
 import { AttachedAccountRoot, ISiteTreeRoot } from 'vscode-azureappservice';
 import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
-import { AzExtParentTreeItem, AzureTreeItem } from '../../extension.bundle';
-import { ITrialAppMetadata } from '../ITrialAppMetadata';
-import { localize } from '../localize';
-import { TrialAppClient } from '../TrialAppClient';
-import { getIconPath } from '../utils/pathUtils';
-import { AzureAccountTreeItem } from './AzureAccountTreeItem';
-import { SiteTreeItem } from './SiteTreeItem';
+import { AzExtParentTreeItem, AzureTreeItem } from '../../../extension.bundle';
+import { ITrialAppMetadata } from '../../ITrialAppMetadata';
+import { localize } from '../../localize';
+import { TrialAppClient } from '../../TrialAppClient';
+import { getIconPath } from '../../utils/pathUtils';
+import { AzureAccountTreeItem } from '../AzureAccountTreeItem';
+import { SiteTreeItem } from '../SiteTreeItem';
+import { TrialAppChecklist } from './TrialAppChecklist';
 
 export class TrialAppTreeItem extends SiteTreeItem {
 
@@ -65,7 +66,9 @@ export class TrialAppTreeItem extends SiteTreeItem {
 
     public async loadMoreChildrenImpl(clearCache: boolean): Promise<AzureTreeItem<ISiteTreeRoot>[]> {
         const children: AzureTreeItem<ISiteTreeRoot>[] = await super.loadMoreChildrenImpl(clearCache);
-        children.pop(); // rmove webjobs tree item
+        children.pop(); // remove webjobs tree item
+        const checklist: TrialAppChecklist = new TrialAppChecklist(this);
+        children.push(checklist);
         return children;
     }
 

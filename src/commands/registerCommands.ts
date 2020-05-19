@@ -51,9 +51,11 @@ import { convertTrialApp } from './trialApp/convertTrialApp';
 import { importTrialApp } from './trialApp/importTrialApp';
 import { removeTrialApp } from './trialApp/removeTrialApp';
 import { resetChecklist } from './trialApp/resetChecklist';
+import { toggleChecklistItem } from './trialApp/toggleChecklistItem';
 
 export function registerCommands(): void {
 
+    registerCommand('appService.toggleChecklistItem', toggleChecklistItem);
     registerCommand('appService.ResetChecklist', resetChecklist);
     registerCommand('appService.ChecklistAction', checklistItemAction);
     registerCommand('appService.TransferTrialToSubscription', convertTrialApp);

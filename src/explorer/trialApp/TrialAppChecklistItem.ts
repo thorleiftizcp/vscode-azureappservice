@@ -13,9 +13,8 @@ import { TrialAppTreeItem } from './TrialAppTreeItem';
 
 export class TrialAppChecklistItem extends AzureTreeItem<ISiteTreeRoot> {
 
-    public static contextValue: string = 'checklistItem';
     public label: string;
-    public contextValue: string;
+    public contextValue: string = 'checklistItem';
 
     public temporaryDescription: string | undefined;
 
@@ -29,7 +28,7 @@ export class TrialAppChecklistItem extends AzureTreeItem<ISiteTreeRoot> {
         this.label = label;
         this.action = action;
         this.temporaryDescription = temporaryDescrption;
-        this.iconPath = new ThemeIcon('dash');
+        this.iconPath = new ThemeIcon('chrome-maximize');
 
         const state: ITrialAppState | undefined = ext.context.globalState.get(TrialAppState);
         if (state) {

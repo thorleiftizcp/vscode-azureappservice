@@ -13,10 +13,10 @@ import { TrialAppChecklistItem } from './TrialAppChecklistItem';
 import { TrialAppTreeItem } from './TrialAppTreeItem';
 
 export class TrialAppChecklist extends AzureParentTreeItem<ISiteTreeRoot> {
-    public label: string = 'Trial App First Steps';
+    public label: string = 'First Steps';
     public contextValue: string = 'trialAppChecklist';
     public checklistItems: TrialAppChecklistItem[];
-    public iconPath: ThemeIcon = new ThemeIcon('checklist');
+    public iconPath: ThemeIcon = new ThemeIcon('list-ordered');
 
     public async loadMoreChildrenImpl(_clearCache: boolean): Promise<AzureTreeItem<ISiteTreeRoot>[]> {
         const children: TrialAppChecklistItem[] = [];

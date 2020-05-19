@@ -325,13 +325,18 @@
                 }
             },
             {
-                "command": "appService.ChecklistAction",
-                "title": "Complete this item",
+                "command": "appService.toggleChecklistItem",
+                "title": "Toggle Checklist Item",
                 "category": "Azure App Service",
                 "icon": {
-                    "light": "resources/light/Visible_Visible_16x.svg",
-                    "dark": "resources/dark/Visible_Visible_16x.svg"
+                    "light": "resources/light/check.svg",
+                    "dark": "resources/dark/check.svg"
                 }
+            },
+            {
+                "command": "appService.ChecklistAction",
+                "title": "Complete this item",
+                "category": "Azure App Service"
             }
         ],
         "viewsContainers": {
@@ -388,6 +393,10 @@
                 },
                 {
                     "command": "appService.toggleAppSettingVisibility",
+                    "when": "never"
+                },
+                {
+                    "command": "appService.toggleChecklistItem",
                     "when": "never"
                 },
                 {
@@ -633,7 +642,7 @@
                     "group": "inline"
                 },
                 {
-                    "command": "appService.ChecklistAction",
+                    "command": "appService.toggleChecklistItem",
                     "when": "view == azureAppService && viewItem == checklistItem",
                     "group": "inline"
                 },

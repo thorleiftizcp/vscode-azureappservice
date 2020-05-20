@@ -10,10 +10,11 @@ import { TrialAppTreeItem } from '../../explorer/trialApp/TrialAppTreeItem';
 import { ext } from '../../extensionVariables';
 import { ITrialAppState } from '../../TrialAppClient';
 
-export async function checklistItemAction(_context: IActionContext, node?: TrialAppChecklistItem): Promise<void> {
+export async function checklistItemAction(context: IActionContext, node?: TrialAppChecklistItem): Promise<void> {
     if (node) {
         await node.runWithTemporaryDescription(node.temporaryDescription ?? 'Loading...', async () => {
-            await node.action(_context, <TrialAppTreeItem>node.parent?.parent);
+            context.telemetry.properties.from = 'firstSteps';
+            await node.action(context, <TrialAppTreeItem>node.parent?.parent);
         });
 
         const state: ITrialAppState | undefined = ext.context.globalState.get(TrialAppState);

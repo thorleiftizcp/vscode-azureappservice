@@ -21,6 +21,11 @@ export interface CosmosDBExtensionApi {
      */
     pickTreeItem(options: PickTreeItemOptions & { resourceType: 'DatabaseAccount' }): Promise<DatabaseAccountTreeItem | undefined>;
     pickTreeItem(options: PickTreeItemOptions & { resourceType: 'Database' }): Promise<DatabaseTreeItem | undefined>;
+
+    /**
+     * Simpler version of `CosmosDBTreeItem.reveal` based on the `resourceId` instead of querying based on a connection string
+     */
+    revealTreeItem(resourceId: string): Promise<void>;
 }
 
 export interface CosmosDBTreeItem {
@@ -46,6 +51,11 @@ export interface DatabaseAccountTreeItem extends CosmosDBTreeItem {
         masterKey: string;
         documentEndpoint: string;
     }
+
+    postgresData?: {
+        username: string;
+        password: string;
+    }
 }
 
 export interface DatabaseTreeItem extends DatabaseAccountTreeItem {
@@ -54,7 +64,7 @@ export interface DatabaseTreeItem extends DatabaseAccountTreeItem {
 
 export type CosmosDBResourceType = 'DatabaseAccount' | 'Database';
 
-export type CosmosDBApiType = 'Mongo' | 'SQL' | 'Graph' | 'Table';
+export type CosmosDBApiType = 'Mongo' | 'SQL' | 'Graph' | 'Table' | 'Postgres';
 
 export interface PickTreeItemOptions {
     /**

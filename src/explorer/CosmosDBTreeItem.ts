@@ -58,7 +58,7 @@ export class CosmosDBTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
         const cosmosDBApi = await this.getCosmosDBApi();
         // tslint:disable-next-line:strict-boolean-expressions
         const appSettings = (await this.parent.client.listApplicationSettings()).properties || {};
-        const connections: IDetectedConnection[] = this.detectMongoConnections(appSettings).concat(this.detectDocDBConnections(appSettings));
+        const connections: IDetectedConnection[] = this.detectMongoConnections(appSettings).concat(this.detectDocDBConnections(appSettings)).concat(this.detectPostgresConnections(appSettings));
         const treeItems = await this.createTreeItemsWithErrorHandling(
             connections,
             'invalidCosmosDBConnection',
@@ -94,9 +94,14 @@ export class CosmosDBTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
         // tslint:disable-next-line:strict-boolean-expressions
         appSettingsDict.properties = appSettingsDict.properties || {};
 
-        const newAppSettings: Map<string, string> = databaseToAdd.docDBData ?
-            await this.promptForDocDBAppSettings(appSettingsDict, databaseToAdd) :
-            await this.promptForMongoAppSettings(appSettingsDict, databaseToAdd);
+        let newAppSettings: Map<string, string>;
+        if (databaseToAdd.docDBData) {
+            newAppSettings = await this.promptForDocDBAppSettings(appSettingsDict, databaseToAdd);
+        } else if (databaseToAdd.postgresData) {
+            newAppSettings = await this.promptForPostgresAppSettings(appSettingsDict, databaseToAdd);
+        } else {
+            newAppSettings = await this.promptForMongoAppSettings(appSettingsDict, databaseToAdd);
+        }
 
         for (const [k, v] of newAppSettings) {
             appSettingsDict.properties[k] = v;
@@ -157,6 +162,20 @@ export class CosmosDBTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
         return result;
     }
 
+    private detectPostgresConnections(appSettings: { [propertyName: string]: string }): IDetectedConnection[] {
+        const result: IDetectedConnection[] = [];
+        for (const key of Object.keys(appSettings)) {
+            const value = appSettings[key];
+            if (/^postgres[^:]*:\/\//i.test(value)) {
+                result.push({
+                    keys: [key],
+                    connectionString: appSettings[key]
+                });
+            }
+        }
+        return result;
+    }
+
     private detectDocDBConnections(appSettings: { [propertyName: string]: string }): IDetectedConnection[] {
         const connectionStringEndpointPrefix = 'AccountEndpoint=';
         const connectionStringKeyPrefix = 'AccountKey=';
@@ -203,6 +222,19 @@ export class CosmosDBTreeItem extends AzureParentTreeItem<ISiteTreeRoot> {
     private async promptForMongoAppSettings(appSettingsDict: StringDictionary, database: DatabaseTreeItem): Promise<Map<string, string>> {
         const prompt: string = 'Enter new connection setting key';
         const defaultKey: string = 'MONGO_URL';
+
+        const appSettingKey: string = await ext.ui.showInputBox({
+            prompt,
+            validateInput: (v: string): string | undefined => validateAppSettingKey(appSettingsDict, this.parent.client, v),
+            value: defaultKey
+        });
+
+        return new Map([[appSettingKey, database.connectionString]]);
+    }
+
+    private async promptForPostgresAppSettings(appSettingsDict: StringDictionary, database: DatabaseTreeItem): Promise<Map<string, string>> {
+        const prompt: string = 'Enter new connection setting key';
+        const defaultKey: string = 'POSTGRESQL_URL';
 
         const appSettingKey: string = await ext.ui.showInputBox({
             prompt,
